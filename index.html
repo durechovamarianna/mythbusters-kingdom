@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="topbar">
+ <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
       <div class="mark">🏰</div>
@@ -19,11 +19,11 @@
 
     <div class="actions">
       <span class="badge" data-testid="build-badge"><span class="dot"></span> CI Ready</span>
-      <button class="btn ghost" data-testid="theme-toggle">☀️ Light</button>
+      <button class="btn ghost" data-testid="theme-toggle">🎨 Theme</button>
     </div>
   </div>
 
-  <div class="topbar-inner" style="padding-top:0">
+  <div class="topbar-inner topbar-inner--nav">
     <nav class="nav" aria-label="Navigácia">
       <a href="index.html" data-testid="nav-home">Domov</a>
       <a href="dragon.html" data-testid="nav-dragon">Drak</a>
@@ -36,50 +36,79 @@
   </div>
 </header>
 
-  <nav class="tabs" aria-label="Navigácia">
-    <a class="tab active" href="index.html" data-testid="nav-home">Domov</a>
-    <a class="tab" href="dragon.html" data-testid="nav-dragon">Klikni na draka</a>
-    <a class="tab" href="spells.html" data-testid="nav-spells">Kalkulačka kúziel</a>
-    <a class="tab" href="library.html" data-testid="nav-library">Knižnica zaklínadiel</a>
-    <a class="tab" href="wizard.html" data-testid="nav-wizard">Casting (wizard)</a>
-    <a class="tab" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
-    <a class="tab" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
-  </nav>
-<div class="container">
-  <div class="shell">
-  <main class="page">
-    <section class="page active" data-testid="page-home">
+<section class="hero hero--home">
+    <div class="hero__content">
       <h1 data-testid="page-title">Domov</h1>
       <p>Každá stránka je navrhnutá tak, aby sa dala ľahko automatizovať v Playwright-e.</p>
-      <ul>
-        <li><b>Klikni na draka</b>: add/remove + counter + limit</li>
-        <li><b>Kalkulačka kúziel</b>: formulár, validácie, výpočet</li>
-        <li><b>Knižnica</b>: search/filter + detail (modal)</li>
-        <li><b>Wizard</b>: multi-step flow</li>
-        <li><b>Wait</b>: async loader + error režim</li>
-        <li><b>Tabuľka</b>: sort/filter</li>
-      </ul>
-    </section>
-  </main>
+
+      <div class="hero__chips">
+        <span class="chip">Multi-page</span>
+        <span class="chip chip--brand">Playwright</span>
+        <span class="chip chip--ok">CI/CD</span>
+      </div>
+    </div>
+    <div class="hero__art" aria-hidden="true"></div>
+  </section>
+
+  <!-- SHELL (rám + tieň) -->
+  <div class="shell">
+    <main class="page">
+
+      <!-- Tvoje pôvodné telo stránky ide SEM -->
+      <section data-testid="page-home">
+        <div class="grid">
+          <div class="card">
+            <h3>🐉 Klikni na draka</h3>
+            <p>add/remove + counter + limit + disabled state</p>
+          </div>
+
+          <div class="card">
+            <h3>✨ Kalkulačka kúziel</h3>
+            <p>formulár, validácie, výpočet</p>
+          </div>
+
+          <div class="card">
+            <h3>📚 Knižnica</h3>
+            <p>search/filter + detail (modal)</p>
+          </div>
+
+          <div class="card">
+            <h3>🎭 Wizard</h3>
+            <p>multi-step flow + summary</p>
+          </div>
+
+          <div class="card">
+            <h3>⏳ Wait</h3>
+            <p>async loader + error režim</p>
+          </div>
+
+          <div class="card">
+            <h3>📊 Tabuľka</h3>
+            <p>sort/filter + stabilné selektory</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
 
     <footer class="footer">
       <span>© MythBusters Kingdom</span>
-      <span>
-        <a href="index.html">Home</a> ·
-        <a href="table.html">Myths</a> ·
+      <span class="footer__links">
+        <a href="index.html">Home</a>
+        <a href="table.html">Myths</a>
         <a href="wait.html">Status</a>
       </span>
     </footer>
   </div>
 </div>
 
-  <script src="app.js"></script>
- <div class="toast" data-testid="toast" hidden>
+<!-- TOAST (rovnaký na všetkých stránkach) -->
+<div class="toast" data-testid="toast" hidden>
   <div>
     <b data-testid="toast-title">Toast</b>
     <p data-testid="toast-msg">Správa</p>
   </div>
   <button class="btn" data-testid="toast-close">OK</button>
-</div> 
+</div>
 </body>
 </html>

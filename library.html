@@ -19,11 +19,11 @@
 
     <div class="actions">
       <span class="badge" data-testid="build-badge"><span class="dot"></span> CI Ready</span>
-      <button class="btn ghost" data-testid="theme-toggle">☀️ Light</button>
+      <button class="btn ghost" data-testid="theme-toggle">🎨 Theme</button>
     </div>
   </div>
 
-  <div class="topbar-inner" style="padding-top:0">
+  <div class="topbar-inner topbar-inner--nav">
     <nav class="nav" aria-label="Navigácia">
       <a href="index.html" data-testid="nav-home">Domov</a>
       <a href="dragon.html" data-testid="nav-dragon">Drak</a>
@@ -36,55 +36,105 @@
   </div>
 </header>
 
-  <nav class="tabs" aria-label="Navigácia">
-    <a class="tab" href="index.html" data-testid="nav-home">Domov</a>
-    <a class="tab" href="dragon.html" data-testid="nav-dragon">Klikni na draka</a>
-    <a class="tab" href="spells.html" data-testid="nav-spells">Kalkulačka kúziel</a>
-    <a class="tab active" href="library.html" data-testid="nav-library">Knižnica zaklínadiel</a>
-    <a class="tab" href="wizard.html" data-testid="nav-wizard">Casting (wizard)</a>
-    <a class="tab" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
-    <a class="tab" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
-  </nav>
 <div class="container">
-  <div class="shell">
-  <main class="page">
-    <section class="page active" data-testid="page-library">
+
+  <!-- HERO banner -->
+  <section class="hero hero--library">
+    <div class="hero__content">
       <h1 data-testid="page-title">Knižnica zaklínadiel</h1>
+      <p>Testovanie: search input, filter dropdown, výsledky v kartách, prázdny stav a modal detail.</p>
 
-      <div class="row">
-        <input data-testid="search" placeholder="Hľadaj kúzlo (napr. smiech)">
-        <select data-testid="filter">
-          <option value="all">Všetky</option>
-          <option value="funny">Komické</option>
-          <option value="attack">Útočné</option>
-          <option value="defense">Obranné</option>
-        </select>
+      <div class="hero__chips">
+        <span class="chip">Search</span>
+        <span class="chip chip--brand">Playwright</span>
+        <span class="chip chip--ok">Modal</span>
       </div>
+    </div>
+    <div class="hero__art" aria-hidden="true"></div>
+  </section>
 
-      <div class="cards" data-testid="spell-cards"></div>
-      <div class="banner" data-testid="no-results" hidden>Nič sa nenašlo 😅</div>
+  <!-- Shell -->
+  <div class="shell">
+    <main class="page">
 
-      <div class="modal" data-testid="modal" hidden>
-        <div class="modal-card">
-          <h2 data-testid="modal-title"></h2>
-          <p data-testid="modal-desc"></p>
-          <button data-testid="modal-close">Zavrieť</button>
+      <section data-testid="page-library">
+
+        <div class="grid">
+
+          <!-- ĽAVÁ KARTA: filtre -->
+          <div class="card">
+            <h3>Filtre</h3>
+            <p>Vyhľadaj kúzlo alebo zmeň kategóriu. Skvelé na automatizované testy.</p>
+
+            <div class="row" style="margin-top:12px;">
+              <label style="width:100%;">
+                Hľadaj
+                <input data-testid="search" placeholder="Hľadaj kúzlo (napr. smiech)">
+              </label>
+            </div>
+
+            <div class="row">
+              <label style="width:100%;">
+                Kategória
+                <select data-testid="filter">
+                  <option value="all">Všetky</option>
+                  <option value="funny">Komické</option>
+                  <option value="attack">Útočné</option>
+                  <option value="defense">Obranné</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="row">
+              <span class="chip chip--warn">empty state</span>
+              <span class="chip">filter</span>
+              <span class="chip chip--brand">selectors</span>
+            </div>
+
+            <div class="banner warn" style="margin-top:12px;">
+              Tip: zadaj nezmysel (napr. “xyz”) a otestuj “Nič sa nenašlo”.
+            </div>
+          </div>
+
+          <!-- PRAVÁ KARTA: výsledky -->
+          <div class="card">
+            <h3>Výsledky</h3>
+            <p>Klikni na kartu kúzla a otvorí sa detail v modale.</p>
+
+            <div class="cards" data-testid="spell-cards"></div>
+
+            <div class="banner" data-testid="no-results" hidden>
+              Nič sa nenašlo 😅
+            </div>
+          </div>
+
         </div>
-      </div>
-    </section>
-  </main>
 
-<footer class="footer">
+        <!-- MODAL (nechaj, len v tomto novom layoute) -->
+        <div class="modal" data-testid="modal" hidden>
+          <div class="modal-card">
+            <h2 data-testid="modal-title"></h2>
+            <p data-testid="modal-desc"></p>
+            <button class="btn primary" data-testid="modal-close">Zavrieť</button>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Footer rovnaký všade -->
+    <footer class="footer">
       <span>© MythBusters Kingdom</span>
-      <span>
-        <a href="index.html">Home</a> ·
-        <a href="table.html">Myths</a> ·
+      <span class="footer__links">
+        <a href="index.html">Home</a>
+        <a href="table.html">Myths</a>
         <a href="wait.html">Status</a>
       </span>
     </footer>
   </div>
 </div>
-  <script src="app.js"></script>
+
+<!-- Toast rovnaký všade -->
 <div class="toast" data-testid="toast" hidden>
   <div>
     <b data-testid="toast-title">Toast</b>
@@ -92,5 +142,8 @@
   </div>
   <button class="btn" data-testid="toast-close">OK</button>
 </div>
+
+<script src="app.js"></script>
+
 </body>
 </html>

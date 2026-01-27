@@ -19,11 +19,11 @@
 
     <div class="actions">
       <span class="badge" data-testid="build-badge"><span class="dot"></span> CI Ready</span>
-      <button class="btn ghost" data-testid="theme-toggle">☀️ Light</button>
+      <button class="btn ghost" data-testid="theme-toggle">🎨 Theme</button>
     </div>
   </div>
 
-  <div class="topbar-inner" style="padding-top:0">
+  <div class="topbar-inner topbar-inner--nav">
     <nav class="nav" aria-label="Navigácia">
       <a href="index.html" data-testid="nav-home">Domov</a>
       <a href="dragon.html" data-testid="nav-dragon">Drak</a>
@@ -36,57 +36,146 @@
   </div>
 </header>
 
-  <nav class="tabs" aria-label="Navigácia">
-    <a class="tab" href="index.html" data-testid="nav-home">Domov</a>
-    <a class="tab" href="dragon.html" data-testid="nav-dragon">Klikni na draka</a>
-    <a class="tab" href="spells.html" data-testid="nav-spells">Kalkulačka kúziel</a>
-    <a class="tab" href="library.html" data-testid="nav-library">Knižnica zaklínadiel</a>
-    <a class="tab active" href="wizard.html" data-testid="nav-wizard">Casting (wizard)</a>
-    <a class="tab" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
-    <a class="tab" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
-  </nav>
 <div class="container">
-  <div class="shell">
-  <main class="page">
-    <section class="page active" data-testid="page-wizard">
+
+  <!-- HERO banner -->
+  <section class="hero hero--wizard">
+    <div class="hero__content">
       <h1 data-testid="page-title">Casting (wizard)</h1>
+      <p>Testovanie multi-step flow: postupné kroky, hidden/visible stavy, summary, confirm + reset.</p>
 
-      <div class="wizard" data-testid="wizard">
-        <div class="step" data-testid="step-1">
-          <h3>Krok 1: Vyber postavu</h3>
-          <button data-testid="pick-hero" data-value="Zajko">Zajko 🐰</button>
-          <button data-testid="pick-hero2" data-value="Princezná">Princezná 👑</button>
-        </div>
-
-        <div class="step" data-testid="step-2" hidden>
-          <h3>Krok 2: Vyber gag</h3>
-          <button data-testid="pick-gag" data-value="Banánová šupka">Banánová šupka 🍌</button>
-          <button data-testid="pick-gag2" data-value="Smiechový elixír">Smiechový elixír 😂</button>
-        </div>
-
-        <div class="step" data-testid="step-3" hidden>
-          <h3>Krok 3: Potvrď</h3>
-          <div class="summary" data-testid="summary"></div>
-          <button data-testid="confirm">Obsadiť 🎬</button>
-        </div>
-
-        <div class="banner ok" data-testid="cast-done" hidden>Obsadené! 🎉</div>
-        <button class="link" data-testid="wizard-reset">Reset wizard</button>
+      <div class="hero__chips">
+        <span class="chip">Stepper</span>
+        <span class="chip chip--brand">Playwright</span>
+        <span class="chip chip--ok">State</span>
       </div>
-    </section>
-  </main>
+    </div>
+    <div class="hero__art" aria-hidden="true"></div>
+  </section>
 
-  <footer class="footer">
+  <!-- Shell -->
+  <div class="shell">
+    <main class="page">
+
+      <section data-testid="page-wizard">
+
+        <div class="grid">
+
+          <!-- ĽAVÁ KARTA: samotný wizard -->
+          <div class="card" style="grid-column: span 7;">
+            <h3>Obsadenie rozprávky</h3>
+            <p>Preklikaj kroky 1 → 2 → 3 a overuj, čo je skryté/zobrazené.</p>
+
+            <div class="wizard" data-testid="wizard" style="margin-top:12px;">
+
+              <!-- STEP 1 -->
+              <div class="banner warn" style="margin-top:0;">
+                Krok <b>1/3</b> • Vyber postavu
+              </div>
+
+              <div class="step" data-testid="step-1">
+                <div class="row">
+                  <button class="btn primary" data-testid="pick-hero" data-value="Zajko">Zajko 🐰</button>
+                  <button class="btn" data-testid="pick-hero2" data-value="Princezná">Princezná 👑</button>
+                </div>
+              </div>
+
+              <!-- STEP 2 -->
+              <div class="step" data-testid="step-2" hidden>
+                <div class="banner warn" style="margin-top:0;">
+                  Krok <b>2/3</b> • Vyber gag
+                </div>
+
+                <div class="row">
+                  <button class="btn primary" data-testid="pick-gag" data-value="Banánová šupka">Banánová šupka 🍌</button>
+                  <button class="btn" data-testid="pick-gag2" data-value="Smiechový elixír">Smiechový elixír 😂</button>
+                </div>
+              </div>
+
+              <!-- STEP 3 -->
+              <div class="step" data-testid="step-3" hidden>
+                <div class="banner warn" style="margin-top:0;">
+                  Krok <b>3/3</b> • Potvrď
+                </div>
+
+                <div class="banner" style="margin-top:12px;">
+                  <b>Summary (testovateľné)</b>
+                  <div class="summary" data-testid="summary" style="margin-top:6px;"></div>
+                </div>
+
+                <div class="row">
+                  <button class="btn primary" data-testid="confirm">Obsadiť 🎬</button>
+                  <span class="chip chip--brand">confirm</span>
+                </div>
+              </div>
+
+              <!-- DONE -->
+              <div class="banner ok" data-testid="cast-done" hidden>
+                Obsadené! 🎉
+              </div>
+
+              <div class="row" style="justify-content:space-between;">
+                <button class="btn ghost" data-testid="wizard-reset">Reset wizard</button>
+                <span class="chip chip--warn">hidden/visible</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- PRAVÁ KARTA: stav + progress (vizuálne) -->
+          <div class="card" style="grid-column: span 5;">
+            <h3>Stav procesu</h3>
+            <p>Tento panel je zámerne “UI heavy”, aby bolo čo testovať (texty, chips, bannery).</p>
+
+            <div class="banner" style="margin-top:12px;">
+              <b>Progress (vizuálne)</b>
+              <div style="margin-top:10px; border:1px solid var(--border); border-radius:999px; overflow:hidden;">
+                <div style="height:10px; width:33%; background: rgba(124,92,255,.55);" data-testid="wizard-progress"></div>
+              </div>
+              <small style="color:var(--muted); display:block; margin-top:8px;">
+                (Voliteľné: neskôr doplníme JS, aby sa progress menil 33% → 66% → 100%.)
+              </small>
+            </div>
+
+            <div class="grid" style="margin-top:12px;">
+              <div class="card" style="grid-column: span 12;">
+                <h3>Test idey</h3>
+                <p>
+                  ✅ po kliknutí na postavu sa skryje <b>step-1</b> a zobrazí <b>step-2</b><br>
+                  ✅ po kliknutí na gag sa zobrazí <b>step-3</b><br>
+                  ✅ po confirm sa zobrazí <b>cast-done</b><br>
+                  ✅ reset vráti všetko na začiatok
+                </p>
+              </div>
+            </div>
+
+            <div class="row">
+              <span class="chip">wizard</span>
+              <span class="chip chip--brand">multi-step</span>
+              <span class="chip chip--ok">stable selectors</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
       <span>© MythBusters Kingdom</span>
-      <span>
-        <a href="index.html">Home</a> ·
-        <a href="table.html">Myths</a> ·
+      <span class="footer__links">
+        <a href="index.html">Home</a>
+        <a href="table.html">Myths</a>
         <a href="wait.html">Status</a>
       </span>
     </footer>
   </div>
 </div>
-  <script src="app.js"></script>
+
+<script src="app.js"></script>
+
+<!-- Toast -->
 <div class="toast" data-testid="toast" hidden>
   <div>
     <b data-testid="toast-title">Toast</b>
@@ -94,5 +183,7 @@
   </div>
   <button class="btn" data-testid="toast-close">OK</button>
 </div>
+
+
 </body>
 </html>

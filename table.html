@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
 <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
@@ -19,11 +20,11 @@
 
     <div class="actions">
       <span class="badge" data-testid="build-badge"><span class="dot"></span> CI Ready</span>
-      <button class="btn ghost" data-testid="theme-toggle">☀️ Light</button>
+      <button class="btn ghost" data-testid="theme-toggle">🎨 Theme</button>
     </div>
   </div>
 
-  <div class="topbar-inner" style="padding-top:0">
+  <div class="topbar-inner topbar-inner--nav">
     <nav class="nav" aria-label="Navigácia">
       <a href="index.html" data-testid="nav-home">Domov</a>
       <a href="dragon.html" data-testid="nav-dragon">Drak</a>
@@ -36,46 +37,103 @@
   </div>
 </header>
 
-  <nav class="tabs" aria-label="Navigácia">
-    <a class="tab" href="index.html" data-testid="nav-home">Domov</a>
-    <a class="tab" href="dragon.html" data-testid="nav-dragon">Klikni na draka</a>
-    <a class="tab" href="spells.html" data-testid="nav-spells">Kalkulačka kúziel</a>
-    <a class="tab" href="library.html" data-testid="nav-library">Knižnica zaklínadiel</a>
-    <a class="tab" href="wizard.html" data-testid="nav-wizard">Casting (wizard)</a>
-    <a class="tab" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
-    <a class="tab active" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
-  </nav>
 <div class="container">
-  <div class="shell">
-  <main class="page">
-    <section class="page active" data-testid="page-table">
+
+  <!-- HERO -->
+  <section class="hero hero--table">
+    <div class="hero__content">
       <h1 data-testid="page-title">Tabuľka mýtov</h1>
+      <p>Testovanie tabuľky: filtrovanie textu, zoradenie podľa závažnosti, kontrola počtu riadkov a obsahu buniek.</p>
 
-      <div class="row">
-        <input data-testid="myth-filter" placeholder="Filter text...">
-        <button data-testid="sort-severity">Zoradiť podľa závažnosti</button>
+      <div class="hero__chips">
+        <span class="chip">Table</span>
+        <span class="chip chip--brand">Playwright</span>
+        <span class="chip chip--ok">Sort/Filter</span>
       </div>
+    </div>
+    <div class="hero__art" aria-hidden="true"></div>
+  </section>
 
-      <table class="tbl" data-testid="myth-table">
-        <thead>
-          <tr><th>ID</th><th>Mýtus</th><th>Závažnosť</th><th>Status</th></tr>
-        </thead>
-        <tbody data-testid="myth-tbody"></tbody>
-      </table>
-    </section>
-  </main>
+  <!-- SHELL -->
+  <div class="shell">
+    <main class="page">
 
-<footer class="footer">
+      <section data-testid="page-table">
+
+        <div class="grid">
+
+          <!-- LEFT: controls -->
+          <div class="card" style="grid-column: span 4;">
+            <h3>Ovládanie</h3>
+            <p>Tu si vieš otestovať vstupy + click akcie (filter, sort).</p>
+
+            <div class="row" style="margin-top:12px;">
+              <label style="width:100%;">
+                Filter
+                <input data-testid="myth-filter" placeholder="Filter text...">
+              </label>
+            </div>
+
+            <div class="row">
+              <button class="btn primary" data-testid="sort-severity">Zoradiť podľa závažnosti</button>
+            </div>
+
+            <div class="row">
+              <span class="chip">input</span>
+              <span class="chip chip--brand">click</span>
+              <span class="chip chip--warn">assert rows</span>
+            </div>
+
+            <div class="banner warn" style="margin-top:12px;">
+              Tip: zadaj napr. <b>bug</b> alebo <b>MYTH-00</b> a skontroluj, že sa zmení počet riadkov.
+            </div>
+          </div>
+
+          <!-- RIGHT: table -->
+          <div class="card" style="grid-column: span 8;">
+            <h3>Zoznam mýtov</h3>
+            <p>Tabuľka je generovaná v JavaScripte, takže je vhodná na E2E testy.</p>
+
+            <table class="tbl" data-testid="myth-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Mýtus</th>
+                  <th>Závažnosť</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody data-testid="myth-tbody"></tbody>
+            </table>
+
+            <div class="banner" style="margin-top:12px;">
+              <b>Test idey</b>
+              <p style="margin-top:6px;">
+                ✅ sort mení poradie podľa závažnosti<br>
+                ✅ filter skracuje množinu riadkov<br>
+                ✅ vieš assertnúť konkrétny riadok podľa <code>data-row-id</code> (v app.js)
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
       <span>© MythBusters Kingdom</span>
-      <span>
-        <a href="index.html">Home</a> ·
-        <a href="table.html">Myths</a> ·
+      <span class="footer__links">
+        <a href="index.html">Home</a>
+        <a href="table.html">Myths</a>
         <a href="wait.html">Status</a>
       </span>
     </footer>
   </div>
 </div>
-  <script src="app.js"></script>
+
+<!-- Toast -->
 <div class="toast" data-testid="toast" hidden>
   <div>
     <b data-testid="toast-title">Toast</b>
@@ -83,5 +141,7 @@
   </div>
   <button class="btn" data-testid="toast-close">OK</button>
 </div>
+
+<script src="app.js"></script>
 </body>
 </html>

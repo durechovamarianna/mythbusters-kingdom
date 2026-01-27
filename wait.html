@@ -19,11 +19,11 @@
 
     <div class="actions">
       <span class="badge" data-testid="build-badge"><span class="dot"></span> CI Ready</span>
-      <button class="btn ghost" data-testid="theme-toggle">☀️ Light</button>
+      <button class="btn ghost" data-testid="theme-toggle">🎨 Theme</button>
     </div>
   </div>
 
-  <div class="topbar-inner" style="padding-top:0">
+  <div class="topbar-inner topbar-inner--nav">
     <nav class="nav" aria-label="Navigácia">
       <a href="index.html" data-testid="nav-home">Domov</a>
       <a href="dragon.html" data-testid="nav-dragon">Drak</a>
@@ -36,50 +36,130 @@
   </div>
 </header>
 
-  <nav class="tabs" aria-label="Navigácia">
-    <a class="tab" href="index.html" data-testid="nav-home">Domov</a>
-    <a class="tab" href="dragon.html" data-testid="nav-dragon">Klikni na draka</a>
-    <a class="tab" href="spells.html" data-testid="nav-spells">Kalkulačka kúziel</a>
-    <a class="tab" href="library.html" data-testid="nav-library">Knižnica zaklínadiel</a>
-    <a class="tab" href="wizard.html" data-testid="nav-wizard">Casting (wizard)</a>
-    <a class="tab active" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
-    <a class="tab" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
-  </nav>
-<div class="container">
-  <div class="shell">
-  <main class="page">
-    <section class="page active" data-testid="page-wait">
+  <div class="container">
+
+  <!-- HERO banner -->
+  <section class="hero hero--wait">
+    <div class="hero__content">
       <h1 data-testid="page-title">Wait for unicorn</h1>
+      <p>Testovanie async: loader, skeleton, success/error stav (toggle fail mode), a časové čakanie.</p>
 
-      <div class="row">
-        <button data-testid="summon">Vyvolaj jednorožca 🦄</button>
-        <label class="toggle">
-          <input type="checkbox" data-testid="fail-mode">
-          Simuluj error (500)
-        </label>
+      <div class="hero__chips">
+        <span class="chip">Async</span>
+        <span class="chip chip--brand">Playwright</span>
+        <span class="chip chip--warn">Waits</span>
       </div>
+    </div>
+    <div class="hero__art" aria-hidden="true"></div>
+  </section>
 
-      <div class="loader" data-testid="loader" hidden>
-  <div class="spinner" aria-hidden="true"></div>
-  Loading… (trvá to 2 sekundy)
-</div>
-	  <div class="skeleton" data-testid="skeleton" hidden>Načítavam jednorožca… (skeleton UI)</div>
-      <div class="banner ok" data-testid="unicorn" hidden>Jednorožec dorazil 🦄✨</div>
-      <div class="banner bad" data-testid="wait-error" hidden>Ups! Jednorožec sa zasekol v CI 😅</div>
-    </section>
-  </main>
+  <!-- Shell -->
+  <div class="shell">
+    <main class="page">
 
+      <section data-testid="page-wait">
+
+        <div class="grid">
+
+          <!-- ĽAVÁ KARTA: ovládanie + loader/skeleton + výsledok -->
+          <div class="card" style="grid-column: span 7;">
+            <h3>Vyvolanie jednorožca</h3>
+            <p>Stlač tlačidlo. UI prejde cez loading → (success alebo error).</p>
+
+            <div class="row" style="margin-top:12px;">
+              <button class="btn primary" data-testid="summon">Vyvolaj jednorožca 🦄</button>
+
+              <label class="chip" style="cursor:pointer; user-select:none;">
+                <input type="checkbox" data-testid="fail-mode" style="margin-right:8px;">
+                Simuluj error (500)
+              </label>
+
+              <span class="chip chip--brand">timeout 2s</span>
+            </div>
+
+            <!-- Loader + skeleton (ponechané) -->
+            <div class="loader" data-testid="loader" hidden>
+              <div class="spinner" aria-hidden="true"></div>
+              Loading… (trvá to 2 sekundy)
+            </div>
+
+            <div class="skeleton" data-testid="skeleton" hidden>
+              Načítavam jednorožca… (skeleton UI)
+            </div>
+
+            <!-- Výsledok -->
+            <div class="banner ok" data-testid="unicorn" hidden>
+              Jednorožec dorazil 🦄✨
+            </div>
+
+            <div class="banner bad" data-testid="wait-error" hidden>
+              Ups! Jednorožec sa zasekol v CI 😅
+            </div>
+
+            <div class="banner warn">
+              Tip: v Playwright-e testuj, že <b>loader</b> sa zobrazí a následne zmizne,
+              a potom sa objaví buď <b>unicorn</b> alebo <b>wait-error</b>.
+            </div>
+          </div>
+
+          <!-- PRAVÁ KARTA: status panel (atraktívne + testovateľné) -->
+          <div class="card" style="grid-column: span 5;">
+            <h3>Status panel</h3>
+            <p>Čisto UI – aby bolo čo testovať (texty, chips, stavy).</p>
+
+            <div class="grid" style="margin-top:12px;">
+              <div class="card" style="grid-column: span 12;">
+                <h3>Environment</h3>
+                <p><b>GitHub Pages</b> • <b>Public demo</b> • <b>CI ready</b></p>
+                <div class="row">
+                  <span class="chip chip--ok">online</span>
+                  <span class="chip">public</span>
+                  <span class="chip chip--brand">E2E</span>
+                </div>
+              </div>
+
+              <div class="card" style="grid-column: span 12;">
+                <h3>Test cases</h3>
+                <p>
+                  ✅ loader visible → hidden<br>
+                  ✅ skeleton visible → hidden<br>
+                  ✅ success OR error podľa toggle<br>
+                  ✅ časové čakanie ~2s
+                </p>
+              </div>
+            </div>
+
+            <div class="banner">
+              <b>Stavové selektory</b>
+              <p style="margin-top:6px;">
+                <span class="chip">loader</span>
+                <span class="chip">skeleton</span>
+                <span class="chip chip--ok">unicorn</span>
+                <span class="chip chip--bad">wait-error</span>
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Footer rovnaký všade -->
     <footer class="footer">
       <span>© MythBusters Kingdom</span>
-      <span>
-        <a href="index.html">Home</a> ·
-        <a href="table.html">Myths</a> ·
+      <span class="footer__links">
+        <a href="index.html">Home</a>
+        <a href="table.html">Myths</a>
         <a href="wait.html">Status</a>
       </span>
     </footer>
   </div>
 </div>
-  <script src="app.js"></script>
+
+<script src="app.js"></script>
+
+<!-- Toast rovnaký všade -->
 <div class="toast" data-testid="toast" hidden>
   <div>
     <b data-testid="toast-title">Toast</b>

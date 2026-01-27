@@ -1,3 +1,4 @@
+// ===== Helpers =====
 function qs(testId){
   return document.querySelector(`[data-testid="${testId}"]`);
 }
@@ -7,42 +8,49 @@ function setTheme(theme){
   localStorage.setItem("mbk-theme", theme);
 }
 
-(function initThemeAndNav(){
-  // Theme
-  const saved = localStorage.getItem("mbk-theme") || "dark";
-  setTheme(saved);
-
-  const toggle = qs("theme-toggle");
-  if(toggle){
-    toggle.textContent = saved === "light" ? "🌙 Dark" : "☀️ Light";
-    toggle.addEventListener("click", ()=>{
-      const current = document.documentElement.getAttribute("data-theme") || "dark";
-      const next = current === "dark" ? "light" : "dark";
-      setTheme(next);
-      toggle.textContent = next === "light" ? "🌙 Dark" : "☀️ Light";
-      showToast("Téma zmenená", `Aktívna téma: ${next}`, "ok");
-    });
-  }
-
-  // Active nav highlighting (podľa názvu súboru)
-  const file = location.pathname.split("/").pop() || "index.html";
-  document.querySelectorAll(".nav a").forEach(a=>{
-    const href = a.getAttribute("href");
-    if(href === file) a.classList.add("active");
-  });
-})();
-
 function showToast(title, msg, kind="ok"){
   const toast = qs("toast");
   if(!toast) return;
-  qs("toast-title").textContent = title;
-  qs("toast-msg").textContent = msg;
+  const t = qs("toast-title");
+  const m = qs("toast-msg");
+  if(t) t.textContent = title;
+  if(m) m.textContent = msg;
+
   toast.setAttribute("data-kind", kind);
   toast.hidden = false;
   clearTimeout(window.__toastTimer);
   window.__toastTimer = setTimeout(()=> toast.hidden = true, 3000);
 }
 
+// ===== Theme + nav active =====
+(function initThemeAndNav(){
+  const saved = localStorage.getItem("mbk-theme") || "dark";
+  setTheme(saved);
+
+  const toggle = qs("theme-toggle");
+  if(toggle){
+    const setLabel = ()=>{
+      const cur = document.documentElement.getAttribute("data-theme") || "dark";
+      toggle.textContent = cur === "light" ? "🌙 Dark" : "☀️ Light";
+    };
+    setLabel();
+
+    toggle.addEventListener("click", ()=>{
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      setTheme(next);
+      setLabel();
+      showToast("Téma zmenená", `Aktívna téma: ${next}`, "ok");
+    });
+  }
+
+  const file = location.pathname.split("/").pop() || "index.html";
+  document.querySelectorAll(".nav a").forEach(a=>{
+    if(a.getAttribute("href") === file) a.classList.add("active");
+  });
+})();
+
+// ===== Toast close =====
 (function initToastClose(){
   const close = qs("toast-close");
   const toast = qs("toast");
@@ -50,7 +58,7 @@ function showToast(title, msg, kind="ok"){
   close.addEventListener("click", ()=> toast.hidden = true);
 })();
 
-// 1) Drak add/remove + limit
+// ===== 1) Dragon =====
 (function initDragon(){
   const arena = qs("dragon-arena");
   const countEl = qs("dragon-count");
@@ -100,7 +108,7 @@ function showToast(title, msg, kind="ok"){
   render();
 })();
 
-// 2) Kalkulačka kúziel
+// ===== 2) Spells =====
 (function initSpells(){
   const form = qs("spell-form");
   const result = qs("spell-result");
@@ -113,12 +121,13 @@ function showToast(title, msg, kind="ok"){
 
   form.addEventListener("submit", (e)=>{
     e.preventDefault();
+
     const mana = Number(manaEl.value);
     const level = Number(levelEl.value);
     const type = typeEl.value;
 
     const ok = Number.isFinite(mana) && Number.isFinite(level) && type &&
-               mana >= 0 && mana <= 999 && level >= 1 && level <= 10;
+      mana >= 0 && mana <= 999 && level >= 1 && level <= 10;
 
     if(!ok){
       result.hidden = true;
@@ -128,6 +137,7 @@ function showToast(title, msg, kind="ok"){
     }
 
     error.hidden = true;
+
     const base = mana * level;
     const mult = type === "attack" ? 1.4 : type === "defense" ? 0.9 : 1.1;
     const score = Math.round(base * mult);
@@ -138,7 +148,7 @@ function showToast(title, msg, kind="ok"){
   });
 })();
 
-// 3) Knižnica + modal
+// ===== 3) Library =====
 (function initLibrary(){
   const cardsWrap = qs("spell-cards");
   const searchEl = qs("search");
@@ -163,8 +173,7 @@ function showToast(title, msg, kind="ok"){
     const f = filterEl.value;
 
     const list = spells.filter(s =>
-      (f === "all" || s.type === f) &&
-      s.name.toLowerCase().includes(q)
+      (f === "all" || s.type === f) && s.name.toLowerCase().includes(q)
     );
 
     cardsWrap.innerHTML = "";
@@ -194,7 +203,7 @@ function showToast(title, msg, kind="ok"){
   render();
 })();
 
-// 4) Wizard
+// ===== 4) Wizard (with progress) =====
 (function initWizard(){
   const step1 = qs("step-1");
   const step2 = qs("step-2");
@@ -215,96 +224,49 @@ function showToast(title, msg, kind="ok"){
   let hero = null;
   let gag = null;
 
+  // Progress bar
+  const prog = qs("wizard-progress");
+  const setProg = (p)=>{ if(prog) prog.style.width = p + "%"; };
+  const updateProg = ()=>{
+    // 33% when step1 visible, 66% when step2 visible, 100% when step3 visible (or done)
+    if(!step1.hidden) return setProg(33);
+    if(!step2.hidden) return setProg(66);
+    if(!step3.hidden) return setProg(100);
+    return setProg(33);
+  };
+
   function reset(){
-    hero = null; gag = null;
+    hero = null;
+    gag = null;
     step1.hidden = false;
     step2.hidden = true;
     step3.hidden = true;
     done.hidden = true;
     summary.textContent = "";
+    updateProg();
   }
 
   function goStep3(){
     step2.hidden = true;
     step3.hidden = false;
     summary.textContent = `Postava: ${hero} | Gag: ${gag}`;
+    updateProg();
   }
 
   pickHero1.addEventListener("click", (e)=>{
     hero = e.target.dataset.value;
-    step1.hidden = true; step2.hidden = false;
+    step1.hidden = true;
+    step2.hidden = false;
+    updateProg();
     showToast("Wizard", `Vybraná postava: ${hero}`, "ok");
   });
+
   pickHero2.addEventListener("click", (e)=>{
     hero = e.target.dataset.value;
-    step1.hidden = true; step2.hidden = false;
+    step1.hidden = true;
+    step2.hidden = false;
+    updateProg();
     showToast("Wizard", `Vybraná postava: ${hero}`, "ok");
   });
 
-  pickGag1.addEventListener("click", (e)=>{ gag = e.target.dataset.value; goStep3(); showToast("Wizard", `Gag: ${gag}`, "warn"); });
-  pickGag2.addEventListener("click", (e)=>{ gag = e.target.dataset.value; goStep3(); showToast("Wizard", `Gag: ${gag}`, "warn"); });
-
-  confirm.addEventListener("click", ()=>{ done.hidden = false; showToast("Obsadené!", "Kamera ide, QA tiež.", "ok"); });
-  resetBtn.addEventListener("click", ()=>{ reset(); showToast("Reset", "Wizard bol resetnutý.", "ok"); });
-
-  reset();
-})();
-
-// 5) Wait
-(function initWait(){
-  const summon = qs("summon");
-  const loader = qs("loader");
-  const unicorn = qs("unicorn");
-  const waitErr = qs("wait-error");
-  const failMode = qs("fail-mode");
-  const skeleton = qs("skeleton");
-
-  if(!summon || !loader || !unicorn || !waitErr || !failMode) return;
-
-  summon.addEventListener("click", async ()=>{
-    loader.hidden = false;
-    if(skeleton) skeleton.hidden = false;
-    unicorn.hidden = true;
-    waitErr.hidden = true;
-
-    await new Promise(r => setTimeout(r, 2000));
-
-    loader.hidden = true;
-    if(skeleton) skeleton.hidden = true;
-
-    if(failMode.checked){
-      waitErr.hidden = false;
-      showToast("Server", "500 – jednorožec sa zasekol 😅", "bad");
-    }else{
-      unicorn.hidden = false;
-      showToast("Success", "Jednorožec dorazil 🦄", "ok");
-    }
-  });
-})();
-
-// 6) Table
-(function initTable(){
-  const tbody = qs("myth-tbody");
-  const mythFilter = qs("myth-filter");
-  const sortBtn = qs("sort-severity");
-
-  if(!tbody || !mythFilter || !sortBtn) return;
-
-  const rows = [
-    { id:"MYTH-001", myth:"Vždy to pôjde aj bez testov", sev: 5, status:"Busted" },
-    { id:"MYTH-002", myth:"Automatizácia nahradí testera", sev: 4, status:"Busted" },
-    { id:"MYTH-003", myth:"Flaky test je iba zlá karma", sev: 3, status:"Investigate" },
-    { id:"MYTH-004", myth:"Bugy sa boja productionu", sev: 5, status:"Busted" },
-  ];
-
-  let sortDesc = true;
-
-  function render(){
-    const q = (mythFilter.value || "").toLowerCase().trim();
-    let list = rows.filter(r =>
-      r.myth.toLowerCase().includes(q) || r.id.toLowerCase().includes(q)
-    );
-
-    list = list.slice().sort((a,b)=> sortDesc ? b.sev - a.sev : a.sev - b.sev);
-
-    tbody.innerHTML = "";
+  pickGag1.addEventListener("click", (e)

@@ -19,11 +19,11 @@
 
     <div class="actions">
       <span class="badge" data-testid="build-badge"><span class="dot"></span> CI Ready</span>
-      <button class="btn ghost" data-testid="theme-toggle">☀️ Light</button>
+      <button class="btn ghost" data-testid="theme-toggle">🎨 Theme</button>
     </div>
   </div>
 
-  <div class="topbar-inner" style="padding-top:0">
+  <div class="topbar-inner topbar-inner--nav">
     <nav class="nav" aria-label="Navigácia">
       <a href="index.html" data-testid="nav-home">Domov</a>
       <a href="dragon.html" data-testid="nav-dragon">Drak</a>
@@ -36,61 +36,119 @@
   </div>
 </header>
 
-  <nav class="tabs" aria-label="Navigácia">
-    <a class="tab" href="index.html" data-testid="nav-home">Domov</a>
-    <a class="tab" href="dragon.html" data-testid="nav-dragon">Klikni na draka</a>
-    <a class="tab active" href="spells.html" data-testid="nav-spells">Kalkulačka kúziel</a>
-    <a class="tab" href="library.html" data-testid="nav-library">Knižnica zaklínadiel</a>
-    <a class="tab" href="wizard.html" data-testid="nav-wizard">Casting (wizard)</a>
-    <a class="tab" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
-    <a class="tab" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
-  </nav>
 <div class="container">
-  <div class="shell">
-  <main class="page">
-    <section class="page active" data-testid="page-spells">
+
+  <!-- HERO banner -->
+  <section class="hero hero--spells">
+    <div class="hero__content">
       <h1 data-testid="page-title">Kalkulačka kúziel</h1>
+      <p>Testovanie formulára: required polia, rozsahy hodnôt, validácia, výpočet a výsledkové stavy.</p>
 
-      <form class="form" data-testid="spell-form">
-        <label>
-          Mana (0–999)
-          <input type="number" data-testid="mana" min="0" max="999" required>
-        </label>
+      <div class="hero__chips">
+        <span class="chip">Forms</span>
+        <span class="chip chip--brand">Playwright</span>
+        <span class="chip chip--ok">Validation</span>
+      </div>
+    </div>
+    <div class="hero__art" aria-hidden="true"></div>
+  </section>
 
-        <label>
-          Level (1–10)
-          <input type="number" data-testid="level" min="1" max="10" required>
-        </label>
+  <!-- Shell rám -->
+  <div class="shell">
+    <main class="page">
 
-        <label>
-          Typ kúzla
-          <select data-testid="spell-type" required>
-            <option value="">-- vyber --</option>
-            <option value="funny">Komické</option>
-            <option value="attack">Útočné</option>
-            <option value="defense">Obranné</option>
-          </select>
-        </label>
+      <section data-testid="page-spells">
 
-        <button type="submit" data-testid="calc">Vypočítať ✨</button>
-      </form>
+        <div class="grid">
 
-      <div class="banner ok" data-testid="spell-result" hidden></div>
-      <div class="banner bad" data-testid="spell-error" hidden>Vyplň všetky polia správne.</div>
-    </section>
-  </main>
+          <!-- Form karta -->
+          <div class="card">
+            <h3>Vstupné parametre kúzla</h3>
 
-<footer class="footer">
+            <form class="form" data-testid="spell-form">
+
+              <div class="row">
+                <label>
+                  Mana (0–999)
+                  <input
+                    type="number"
+                    data-testid="mana"
+                    min="0"
+                    max="999"
+                    required
+                    placeholder="napr. 120"
+                  >
+                </label>
+
+                <label>
+                  Level (1–10)
+                  <input
+                    type="number"
+                    data-testid="level"
+                    min="1"
+                    max="10"
+                    required
+                    placeholder="napr. 3"
+                  >
+                </label>
+              </div>
+
+              <label>
+                Typ kúzla
+                <select data-testid="spell-type" required>
+                  <option value="">-- vyber --</option>
+                  <option value="funny">Komické</option>
+                  <option value="attack">Útočné</option>
+                  <option value="defense">Obranné</option>
+                </select>
+              </label>
+
+              <div class="row">
+                <button class="btn primary" type="submit" data-testid="calc">
+                  Vypočítať ✨
+                </button>
+                <span class="chip">submit</span>
+                <span class="chip chip--warn">required</span>
+              </div>
+            </form>
+          </div>
+
+          <!-- Výsledky / stavy -->
+          <div class="card">
+            <h3>Výsledok výpočtu</h3>
+            <p>Po odoslaní formulára sa zobrazí jeden z nasledujúcich stavov:</p>
+
+            <div class="banner ok" data-testid="spell-result" hidden>
+              Úspešný výpočet kúzla ✨
+            </div>
+
+            <div class="banner bad" data-testid="spell-error" hidden>
+              Vyplň všetky polia správne.
+            </div>
+
+            <div class="banner warn">
+              Tip: zadaj extrémne hodnoty (0, 999, 10) a sleduj validáciu.
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Footer rovnaký všade -->
+    <footer class="footer">
       <span>© MythBusters Kingdom</span>
-      <span>
-        <a href="index.html">Home</a> ·
-        <a href="table.html">Myths</a> ·
+      <span class="footer__links">
+        <a href="index.html">Home</a>
+        <a href="table.html">Myths</a>
         <a href="wait.html">Status</a>
       </span>
     </footer>
   </div>
 </div>
-  <script src="app.js"></script>
+
+<!-- Toast rovnaký všade -->
 <div class="toast" data-testid="toast" hidden>
   <div>
     <b data-testid="toast-title">Toast</b>

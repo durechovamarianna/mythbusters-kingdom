@@ -19,11 +19,11 @@
 
     <div class="actions">
       <span class="badge" data-testid="build-badge"><span class="dot"></span> CI Ready</span>
-      <button class="btn ghost" data-testid="theme-toggle">☀️ Light</button>
+      <button class="btn ghost" data-testid="theme-toggle">🎨 Theme</button>
     </div>
   </div>
 
-  <div class="topbar-inner" style="padding-top:0">
+  <div class="topbar-inner topbar-inner--nav">
     <nav class="nav" aria-label="Navigácia">
       <a href="index.html" data-testid="nav-home">Domov</a>
       <a href="dragon.html" data-testid="nav-dragon">Drak</a>
@@ -36,46 +36,86 @@
   </div>
 </header>
 
-  <nav class="tabs" aria-label="Navigácia">
-    <a class="tab" href="index.html" data-testid="nav-home">Domov</a>
-    <a class="tab active" href="dragon.html" data-testid="nav-dragon">Klikni na draka</a>
-    <a class="tab" href="spells.html" data-testid="nav-spells">Kalkulačka kúziel</a>
-    <a class="tab" href="library.html" data-testid="nav-library">Knižnica zaklínadiel</a>
-    <a class="tab" href="wizard.html" data-testid="nav-wizard">Casting (wizard)</a>
-    <a class="tab" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
-    <a class="tab" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
-  </nav>
 <div class="container">
-  <div class="shell">
-  <main class="page">
-    <section class="page active" data-testid="page-dragon">
+
+  <!-- HERO banner -->
+  <section class="hero hero--dragon">
+    <div class="hero__content">
       <h1 data-testid="page-title">Klikni na draka</h1>
+      <p>Testovanie DOM zmien: add/remove, limit 5, disabled state, alert banner + (voliteľne) progress.</p>
 
-      <div class="row">
-        <button data-testid="add-dragon">Pridať draka 🐉</button>
-        <button data-testid="remove-dragon">Odpáliť draka 💥</button>
-        <button data-testid="reset-dragon">Reset</button>
+      <div class="hero__chips">
+        <span class="chip chip--bad">DOM</span>
+        <span class="chip chip--brand">Playwright</span>
+        <span class="chip chip--ok">CI</span>
       </div>
+    </div>
+    <div class="hero__art" aria-hidden="true"></div>
+  </section>
 
-      <p class="hint">Max 5 drakov, potom sa tlačidlo vypne.</p>
-      <div class="counter">Počet drakov: <b data-testid="dragon-count">0</b></div>
+  <!-- Shell rám -->
+  <div class="shell">
+    <main class="page">
 
-      <div class="arena" data-testid="dragon-arena"></div>
-      <div class="banner" data-testid="dragon-banner" hidden>Drakov je už príliš veľa!</div>
-    </section>
-  </main>
+      <!-- Telo stránky -->
+      <section data-testid="page-dragon">
 
-<footer class="footer">
+        <!-- KPI / info karty (atraktívne + testovateľné) -->
+        <div class="grid">
+          <div class="card">
+            <h3>Limit drakov</h3>
+            <p><b>5</b> kusov. Po dosiahnutí limitu sa tlačidlo “Pridať draka” vypne.</p>
+            <div class="row">
+              <span class="chip chip--warn">disabled</span>
+              <span class="chip">state</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Aktuálny počet</h3>
+            <p>Počet drakov v aréne:</p>
+            <div style="font-size:34px; font-weight:900; margin-top:6px;">
+              <span data-testid="dragon-count">0</span>
+            </div>
+            <small style="color:var(--muted);">Tento prvok je super na asserty v Playwright.</small>
+          </div>
+        </div>
+
+        <!-- Ovládanie -->
+        <div class="row" style="margin-top:14px;">
+          <button class="btn primary" data-testid="add-dragon">Pridať draka 🐉</button>
+          <button class="btn" data-testid="remove-dragon">Odpáliť draka 💥</button>
+          <button class="btn ghost" data-testid="reset-dragon">Reset</button>
+        </div>
+
+        <div class="banner warn">
+          Max 5 drakov, potom sa tlačidlo vypne.
+        </div>
+
+        <!-- Aréna (tvoje pôvodné testovacie miesto) -->
+        <div class="arena" data-testid="dragon-arena"></div>
+
+        <!-- Alert pri limite -->
+        <div class="banner bad" data-testid="dragon-banner" hidden>
+          Drakov je už príliš veľa!
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Footer rovnaký všade -->
+    <footer class="footer">
       <span>© MythBusters Kingdom</span>
-      <span>
-        <a href="index.html">Home</a> ·
-        <a href="table.html">Myths</a> ·
+      <span class="footer__links">
+        <a href="index.html">Home</a>
+        <a href="table.html">Myths</a>
         <a href="wait.html">Status</a>
       </span>
     </footer>
   </div>
 </div>
-  <script src="app.js"></script>
+
+<!-- Toast rovnaký všade -->
 <div class="toast" data-testid="toast" hidden>
   <div>
     <b data-testid="toast-title">Toast</b>
