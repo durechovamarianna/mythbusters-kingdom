@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MythBusters Kingdom</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo">🏰</span>
+      <div>
+        <div class="title">MythBusters Kingdom</div>
+        <div class="subtitle">Rozprávková akadémia testerov (Tabs + CI/CD + Playwright)</div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Záložky">
+    <button class="tab active" data-tab="home" data-testid="tab-home">Domov</button>
+    <button class="tab" data-tab="dragon" data-testid="tab-dragon">Klikni na draka</button>
+    <button class="tab" data-tab="spells" data-testid="tab-spells">Kalkulačka kúziel</button>
+    <button class="tab" data-tab="library" data-testid="tab-library">Knižnica zaklínadiel</button>
+    <button class="tab" data-tab="wizard" data-testid="tab-wizard">Casting (wizard)</button>
+    <button class="tab" data-tab="wait" data-testid="tab-wait">Wait for unicorn</button>
+    <button class="tab" data-tab="table" data-testid="tab-table">Tabuľka mýtov</button>
+  </nav>
+
+  <main class="panel">
+
+    <section class="page active" id="home" data-testid="page-home">
+      <h1 data-testid="page-title">Domov</h1>
+      <p>Každá záložka je navrhnutá tak, aby sa dala ľahko automatizovať v Playwright-e.</p>
+
+      <ul>
+        <li><b>Klikni na draka</b>: add/remove + counter + limit</li>
+        <li><b>Kalkulačka kúziel</b>: formulár, validácie, výpočet</li>
+        <li><b>Knižnica</b>: search/filter + detail</li>
+        <li><b>Wizard</b>: multi-step flow</li>
+        <li><b>Wait</b>: async loader + error režim</li>
+        <li><b>Tabuľka</b>: sort/filter</li>
+      </ul>
+    </section>
+
+    <section class="page" id="dragon" data-testid="page-dragon">
+      <h1 data-testid="page-title">Klikni na draka</h1>
+
+      <div class="row">
+        <button data-testid="add-dragon">Pridať draka 🐉</button>
+        <button data-testid="remove-dragon">Odpáliť draka 💥</button>
+        <button data-testid="reset-dragon">Reset</button>
+      </div>
+
+      <p class="hint">Max 5 drakov, potom sa tlačidlo vypne.</p>
+      <div class="counter">Počet drakov: <b data-testid="dragon-count">0</b></div>
+      <div class="arena" data-testid="dragon-arena"></div>
+      <div class="banner" data-testid="dragon-banner" hidden>Drakov je už príliš veľa!</div>
+    </section>
+
+    <section class="page" id="spells" data-testid="page-spells">
+      <h1 data-testid="page-title">Kalkulačka kúziel</h1>
+
+      <form class="form" data-testid="spell-form">
+        <label>
+          Mana (0–999)
+          <input type="number" data-testid="mana" min="0" max="999" required>
+        </label>
+
+        <label>
+          Level (1–10)
+          <input type="number" data-testid="level" min="1" max="10" required>
+        </label>
+
+        <label>
+          Typ kúzla
+          <select data-testid="spell-type" required>
+            <option value="">-- vyber --</option>
+            <option value="funny">Komické</option>
+            <option value="attack">Útočné</option>
+            <option value="defense">Obranné</option>
+          </select>
+        </label>
+
+        <button type="submit" data-testid="calc">Vypočítať ✨</button>
+      </form>
+
+      <div class="banner ok" data-testid="spell-result" hidden></div>
+      <div class="banner bad" data-testid="spell-error" hidden>Vyplň všetky polia správne.</div>
+    </section>
+
+    <section class="page" id="library" data-testid="page-library">
+      <h1 data-testid="page-title">Knižnica zaklínadiel</h1>
+
+      <div class="row">
+        <input data-testid="search" placeholder="Hľadaj kúzlo (napr. smiech)">
+        <select data-testid="filter">
+          <option value="all">Všetky</option>
+          <option value="funny">Komické</option>
+          <option value="attack">Útočné</option>
+          <option value="defense">Obranné</option>
+        </select>
+      </div>
+
+      <div class="cards" data-testid="spell-cards"></div>
+      <div class="banner" data-testid="no-results" hidden>Nič sa nenašlo 😅</div>
+
+      <div class="modal" data-testid="modal" hidden>
+        <div class="modal-card">
+          <h2 data-testid="modal-title"></h2>
+          <p data-testid="modal-desc"></p>
+          <button data-testid="modal-close">Zavrieť</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="wizard" data-testid="page-wizard">
+      <h1 data-testid="page-title">Casting (wizard)</h1>
+
+      <div class="wizard" data-testid="wizard">
+        <div class="step" data-testid="step-1">
+          <h3>Krok 1: Vyber postavu</h3>
+          <button data-testid="pick-hero" data-value="Zajko">Zajko 🐰</button>
+          <button data-testid="pick-hero2" data-value="Princezná">Princezná 👑</button>
+        </div>
+
+        <div class="step" data-testid="step-2" hidden>
+          <h3>Krok 2: Vyber gag</h3>
+          <button data-testid="pick-gag" data-value="Banánová šupka">Banánová šupka 🍌</button>
+          <button data-testid="pick-gag2" data-value="Smiechový elixír">Smiechový elixír 😂</button>
+        </div>
+
+        <div class="step" data-testid="step-3" hidden>
+          <h3>Krok 3: Potvrď</h3>
+          <div class="summary" data-testid="summary"></div>
+          <button data-testid="confirm">Obsadiť 🎬</button>
+        </div>
+
+        <div class="banner ok" data-testid="cast-done" hidden>Obsadené! 🎉</div>
+        <button class="link" data-testid="wizard-reset">Reset wizard</button>
+      </div>
+    </section>
+
+    <section class="page" id="wait" data-testid="page-wait">
+      <h1 data-testid="page-title">Wait for unicorn</h1>
+
+      <div class="row">
+        <button data-testid="summon">Vyvolaj jednorožca 🦄</button>
+        <label class="toggle">
+          <input type="checkbox" data-testid="fail-mode">
+          Simuluj error (500)
+        </label>
+      </div>
+
+      <div class="loader" data-testid="loader" hidden>Loading… (trvá to 2 sekundy)</div>
+      <div class="banner ok" data-testid="unicorn" hidden>Jednorožec dorazil 🦄✨</div>
+      <div class="banner bad" data-testid="wait-error" hidden>Ups! Jednorožec sa zasekol v CI 😅</div>
+    </section>
+
+    <section class="page" id="table" data-testid="page-table">
+      <h1 data-testid="page-title">Tabuľka mýtov</h1>
+
+      <div class="row">
+        <input data-testid="myth-filter" placeholder="Filter text...">
+        <button data-testid="sort-severity">Zoradiť podľa závažnosti</button>
+      </div>
+
+      <table class="tbl" data-testid="myth-table">
+        <thead>
+          <tr><th>ID</th><th>Mýtus</th><th>Závažnosť</th><th>Status</th></tr>
+        </thead>
+        <tbody data-testid="myth-tbody"></tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <div>© MythBusters Kingdom — pripravené na Playwright + CI/CD.</div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
