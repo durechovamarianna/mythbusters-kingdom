@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MythBusters Kingdom – Drak</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo">🐉</span>
+      <div>
+        <div class="title">Klikni na draka</div>
+        <div class="subtitle">DOM add/remove + limit + disabled state</div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Navigácia">
+    <a class="tab" href="index.html" data-testid="nav-home">Domov</a>
+    <a class="tab active" href="dragon.html" data-testid="nav-dragon">Klikni na draka</a>
+    <a class="tab" href="spells.html" data-testid="nav-spells">Kalkulačka kúziel</a>
+    <a class="tab" href="library.html" data-testid="nav-library">Knižnica zaklínadiel</a>
+    <a class="tab" href="wizard.html" data-testid="nav-wizard">Casting (wizard)</a>
+    <a class="tab" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
+    <a class="tab" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
+  </nav>
+
+  <main class="panel">
+    <section class="page active" data-testid="page-dragon">
+      <h1 data-testid="page-title">Klikni na draka</h1>
+
+      <div class="row">
+        <button data-testid="add-dragon">Pridať draka 🐉</button>
+        <button data-testid="remove-dragon">Odpáliť draka 💥</button>
+        <button data-testid="reset-dragon">Reset</button>
+      </div>
+
+      <p class="hint">Max 5 drakov, potom sa tlačidlo vypne.</p>
+      <div class="counter">Počet drakov: <b data-testid="dragon-count">0</b></div>
+
+      <div class="arena" data-testid="dragon-arena"></div>
+      <div class="banner" data-testid="dragon-banner" hidden>Drakov je už príliš veľa!</div>
+    </section>
+  </main>
+
+  <footer class="foot"><div>© MythBusters Kingdom</div></footer>
+  <script src="app.js"></script>
+</body>
+</html>

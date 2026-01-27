@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MythBusters Kingdom – Wait</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo">⏳</span>
+      <div>
+        <div class="title">Wait for unicorn</div>
+        <div class="subtitle">Async loader + fail mode</div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Navigácia">
+    <a class="tab" href="index.html" data-testid="nav-home">Domov</a>
+    <a class="tab" href="dragon.html" data-testid="nav-dragon">Klikni na draka</a>
+    <a class="tab" href="spells.html" data-testid="nav-spells">Kalkulačka kúziel</a>
+    <a class="tab" href="library.html" data-testid="nav-library">Knižnica zaklínadiel</a>
+    <a class="tab" href="wizard.html" data-testid="nav-wizard">Casting (wizard)</a>
+    <a class="tab active" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
+    <a class="tab" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
+  </nav>
+
+  <main class="panel">
+    <section class="page active" data-testid="page-wait">
+      <h1 data-testid="page-title">Wait for unicorn</h1>
+
+      <div class="row">
+        <button data-testid="summon">Vyvolaj jednorožca 🦄</button>
+        <label class="toggle">
+          <input type="checkbox" data-testid="fail-mode">
+          Simuluj error (500)
+        </label>
+      </div>
+
+      <div class="loader" data-testid="loader" hidden>Loading… (trvá to 2 sekundy)</div>
+      <div class="banner ok" data-testid="unicorn" hidden>Jednorožec dorazil 🦄✨</div>
+      <div class="banner bad" data-testid="wait-error" hidden>Ups! Jednorožec sa zasekol v CI 😅</div>
+    </section>
+  </main>
+
+  <footer class="foot"><div>© MythBusters Kingdom</div></footer>
+  <script src="app.js"></script>
+</body>
+</html>

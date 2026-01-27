@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MythBusters Kingdom – Tabuľka</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo">📊</span>
+      <div>
+        <div class="title">Tabuľka mýtov</div>
+        <div class="subtitle">Filter + sort + stable row selectors</div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Navigácia">
+    <a class="tab" href="index.html" data-testid="nav-home">Domov</a>
+    <a class="tab" href="dragon.html" data-testid="nav-dragon">Klikni na draka</a>
+    <a class="tab" href="spells.html" data-testid="nav-spells">Kalkulačka kúziel</a>
+    <a class="tab" href="library.html" data-testid="nav-library">Knižnica zaklínadiel</a>
+    <a class="tab" href="wizard.html" data-testid="nav-wizard">Casting (wizard)</a>
+    <a class="tab" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
+    <a class="tab active" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
+  </nav>
+
+  <main class="panel">
+    <section class="page active" data-testid="page-table">
+      <h1 data-testid="page-title">Tabuľka mýtov</h1>
+
+      <div class="row">
+        <input data-testid="myth-filter" placeholder="Filter text...">
+        <button data-testid="sort-severity">Zoradiť podľa závažnosti</button>
+      </div>
+
+      <table class="tbl" data-testid="myth-table">
+        <thead>
+          <tr><th>ID</th><th>Mýtus</th><th>Závažnosť</th><th>Status</th></tr>
+        </thead>
+        <tbody data-testid="myth-tbody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="foot"><div>© MythBusters Kingdom</div></footer>
+  <script src="app.js"></script>
+</body>
+</html>
