@@ -3,138 +3,93 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MythBusters Kingdom – Knižnica</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Knihovník – Knižnica kúziel</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <div class="mark">🏰</div>
-      <div>
-        <div class="title">MythBusters Kingdom</div>
-        <div class="subtitle">IT tím plný nadšenia • UI na testovanie • Playwright ready</div>
+
+<header class="mbk-top">
+  <div class="mbk-top__inner">
+    <div class="mbk-brand" data-testid="brand">
+      <span class="mbk-brand__logo" aria-hidden="true">📜</span>
+      <div class="mbk-brand__text">
+        <div class="mbk-brand__title">MythBusters Kingdom</div>
+        <div class="mbk-brand__subtitle">Playwright UI Playground • CI/CD ready</div>
       </div>
     </div>
-
-    <div class="actions">
-      <span class="badge" data-testid="build-badge"><span class="dot"></span> CI Ready</span>
-      <button class="btn ghost" data-testid="theme-toggle">🎨 Theme</button>
+    <div class="mbk-actions">
+      <button class="mbk-btn mbk-btn--ghost" data-testid="theme-toggle" type="button">🎨 Theme</button>
     </div>
   </div>
 
-  <div class="topbar-inner topbar-inner--nav">
-    <nav class="nav" aria-label="Navigácia">
-      <a href="index.html" data-testid="nav-home">Domov</a>
-      <a href="dragon.html" data-testid="nav-dragon">Drak</a>
-      <a href="spells.html" data-testid="nav-spells">Kúzla</a>
-      <a href="library.html" data-testid="nav-library">Knižnica</a>
-      <a href="wizard.html" data-testid="nav-wizard">Wizard</a>
-      <a href="wait.html" data-testid="nav-wait">Wait</a>
-      <a href="table.html" data-testid="nav-table">Tabuľka</a>
-    </nav>
-  </div>
+  <nav class="mbk-navcards" aria-label="Navigácia" data-testid="nav">
+    <a class="navcard" href="index.html" data-testid="nav-home">
+      <div class="navcard__icon">🏠</div><div class="navcard__text"><div class="navcard__title">Domov</div><div class="navcard__meta">welcome + links</div></div>
+    </a>
+    <a class="navcard" href="dragon.html" data-testid="nav-dragon">
+      <div class="navcard__icon">🐉</div><div class="navcard__text"><div class="navcard__title">Drak</div><div class="navcard__meta">DOM + limit</div></div>
+    </a>
+    <a class="navcard" href="spells.html" data-testid="nav-spells">
+      <div class="navcard__icon">✨</div><div class="navcard__text"><div class="navcard__title">Kúzla</div><div class="navcard__meta">form + rules</div></div>
+    </a>
+    <a class="navcard is-active" href="library.html" data-testid="nav-library">
+      <div class="navcard__icon">📚</div><div class="navcard__text"><div class="navcard__title">Knižnica</div><div class="navcard__meta">search + filter</div></div>
+    </a>
+    <a class="navcard" href="wizard.html" data-testid="nav-wizard">
+      <div class="navcard__icon">🧙</div><div class="navcard__text"><div class="navcard__title">Wizard</div><div class="navcard__meta">multi-step</div></div>
+    </a>
+    <a class="navcard" href="wait.html" data-testid="nav-wait">
+      <div class="navcard__icon">⏳</div><div class="navcard__text"><div class="navcard__title">Wait</div><div class="navcard__meta">loader + error</div></div>
+    </a>
+    <a class="navcard" href="table.html" data-testid="nav-table">
+      <div class="navcard__icon">📊</div><div class="navcard__text"><div class="navcard__title">Tabuľka</div><div class="navcard__meta">sort + filter</div></div>
+    </a>
+  </nav>
 </header>
 
-<div class="container">
+<main class="mbk-page spelleology-theme" data-testid="page-library">
 
-  <!-- HERO banner -->
-  <section class="hero hero--library">
-    <div class="hero__content">
-      <h1 data-testid="page-title">Knižnica zaklínadiel</h1>
-      <p>Testovanie: search input, filter dropdown, výsledky v kartách, prázdny stav a modal detail.</p>
+  <section class="spelleology-hero">
+    <h1 class="spelleology-title" data-testid="page-title">Knihovník</h1>
 
-      <div class="hero__chips">
-        <span class="chip">Search</span>
-        <span class="chip chip--brand">Playwright</span>
-        <span class="chip chip--ok">Modal</span>
+    <div class="spelleology-search">
+      <label class="spelleology-label" for="search">search for spell effect</label>
+      <input id="search" type="text" data-testid="search"
+             placeholder="napr. smiech / žluťoučký / Æther-77 / %$# / 123..."
+             autocomplete="off" />
+      <div class="spelleology-rule">
+        Filtruje sa až po zadaní <b>min. 3 znakov</b>. Reťazce môžu obsahovať diakritiku, veľké/malé písmená, čísla a špeciálne znaky.
       </div>
     </div>
-    <div class="hero__art" aria-hidden="true"></div>
   </section>
 
-  <!-- Shell -->
-  <div class="shell">
-    <main class="page">
+  <section class="spelleology-board" aria-label="Zoznam kúziel">
+    <!-- stavové hlášky pre testy -->
+    <div class="spelleology-status" data-testid="min3-hint">
+      Zadaj aspoň <b>3 znaky</b>, aby sa spustilo filtrovanie.
+    </div>
 
-      <section data-testid="page-library">
+    <div class="spelleology-status" data-testid="no-results" hidden>
+      Nič sa nenašlo. Skús iný výraz.
+    </div>
 
-        <div class="grid">
+    <!-- sem sa renderujú reťazce -->
+    <div class="spelleology-cloud" data-testid="spell-cloud"></div>
+  </section>
 
-          <!-- ĽAVÁ KARTA: filtre -->
-          <div class="card">
-            <h3>Filtre</h3>
-            <p>Vyhľadaj kúzlo alebo zmeň kategóriu. Skvelé na automatizované testy.</p>
+</main>
 
-            <div class="row" style="margin-top:12px;">
-              <label style="width:100%;">
-                Hľadaj
-                <input data-testid="search" placeholder="Hľadaj kúzlo (napr. smiech)">
-              </label>
-            </div>
-
-            <div class="row">
-              <label style="width:100%;">
-                Kategória
-                <select data-testid="filter">
-                  <option value="all">Všetky</option>
-                  <option value="funny">Komické</option>
-                  <option value="attack">Útočné</option>
-                  <option value="defense">Obranné</option>
-                </select>
-              </label>
-            </div>
-
-            <div class="row">
-              <span class="chip chip--warn">empty state</span>
-              <span class="chip">filter</span>
-              <span class="chip chip--brand">selectors</span>
-            </div>
-
-            <div class="banner warn" style="margin-top:12px;">
-              Tip: zadaj nezmysel (napr. “xyz”) a otestuj “Nič sa nenašlo”.
-            </div>
-          </div>
-
-          <!-- PRAVÁ KARTA: výsledky -->
-          <div class="card">
-            <h3>Výsledky</h3>
-            <p>Klikni na kartu kúzla a otvorí sa detail v modale.</p>
-
-            <div class="cards" data-testid="spell-cards"></div>
-
-            <div class="banner" data-testid="no-results" hidden>
-              Nič sa nenašlo 😅
-            </div>
-          </div>
-
-        </div>
-
-        <!-- MODAL (nechaj, len v tomto novom layoute) -->
-        <div class="modal" data-testid="modal" hidden>
-          <div class="modal-card">
-            <h2 data-testid="modal-title"></h2>
-            <p data-testid="modal-desc"></p>
-            <button class="btn primary" data-testid="modal-close">Zavrieť</button>
-          </div>
-        </div>
-
-      </section>
-    </main>
-
-    <!-- Footer rovnaký všade -->
-    <footer class="footer">
-      <span>© MythBusters Kingdom</span>
-      <span class="footer__links">
-        <a href="index.html">Home</a>
-        <a href="table.html">Myths</a>
-        <a href="wait.html">Status</a>
-      </span>
-    </footer>
+<footer class="mbk-footer" data-testid="footer">
+  <div class="mbk-footer__inner">
+    <div>© MythBusters Kingdom</div>
+    <div class="mbk-footer__links">
+      <a href="index.html" data-testid="footer-home">Home</a>
+      <a href="table.html" data-testid="footer-myths">Myths</a>
+      <a href="wait.html" data-testid="footer-status">Status</a>
+    </div>
   </div>
-</div>
+</footer>
 
-<!-- Toast rovnaký všade -->
 <div class="toast" data-testid="toast" hidden>
   <div>
     <b data-testid="toast-title">Toast</b>
@@ -144,6 +99,5 @@
 </div>
 
 <script src="app.js"></script>
-
 </body>
 </html>

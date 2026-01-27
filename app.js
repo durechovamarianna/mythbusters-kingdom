@@ -1,3 +1,7 @@
+// =========================
+// MythBusters Kingdom - app.js
+// =========================
+
 // ===== Helpers =====
 function qs(testId){
   return document.querySelector(`[data-testid="${testId}"]`);
@@ -8,9 +12,15 @@ function setTheme(theme){
   localStorage.setItem("mbk-theme", theme);
 }
 
+function safeToast(title, msg, kind){
+  // bezpečná verzia - nikdy nespadne
+  if (typeof showToast === "function") showToast(title, msg, kind);
+}
+
 function showToast(title, msg, kind="ok"){
   const toast = qs("toast");
   if(!toast) return;
+
   const t = qs("toast-title");
   const m = qs("toast-msg");
   if(t) t.textContent = title;
@@ -18,12 +28,16 @@ function showToast(title, msg, kind="ok"){
 
   toast.setAttribute("data-kind", kind);
   toast.hidden = false;
+
   clearTimeout(window.__toastTimer);
-  window.__toastTimer = setTimeout(()=> toast.hidden = true, 3000);
+  window.__toastTimer = setTimeout(()=> {
+    toast.hidden = true;
+  }, 3000);
 }
 
 // ===== Theme + nav active =====
 (function initThemeAndNav(){
+  // Theme
   const saved = localStorage.getItem("mbk-theme") || "dark";
   setTheme(saved);
 
@@ -44,9 +58,20 @@ function showToast(title, msg, kind="ok"){
     });
   }
 
-  const file = location.pathname.split("/").pop() || "index.html";
+  // Active highlighting
+  const file = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+
+  // a) starý dizajn (.nav a)
   document.querySelectorAll(".nav a").forEach(a=>{
-    if(a.getAttribute("href") === file) a.classList.add("active");
+    const href = (a.getAttribute("href") || "").toLowerCase();
+    if(href === file) a.classList.add("active");
+  });
+
+  // b) nový dizajn (nav kartičky .navcard)
+  document.querySelectorAll(".mbk-navcards a").forEach(a=>{
+    const href = (a.getAttribute("href") || "").toLowerCase();
+    a.classList.remove("is-active");
+    if(href === file) a.classList.add("is-active");
   });
 })();
 
@@ -58,7 +83,8 @@ function showToast(title, msg, kind="ok"){
   close.addEventListener("click", ()=> toast.hidden = true);
 })();
 
-// ===== 1) Dragon =====
+// ===== 1) Dragon (0–77, random position, remove last, reset) =====
+// ===== 1) Dragon (0–77, random position + random size, click highlight) =====
 (function initDragon(){
   const arena = qs("dragon-arena");
   const countEl = qs("dragon-count");
@@ -67,140 +93,373 @@ function showToast(title, msg, kind="ok"){
   const resetBtn = qs("reset-dragon");
   const banner = qs("dragon-banner");
 
-  if(!arena || !countEl || !addBtn || !remBtn || !resetBtn || !banner) return;
+  if(!arena || !countEl || !addBtn || !remBtn || !resetBtn) return;
 
-  let dragons = 0;
-  const MAX = 5;
+  const MAX = 77;
+  let stack = [];
 
-  function render(){
-    countEl.textContent = String(dragons);
-    arena.innerHTML = "";
-    for(let i=0;i<dragons;i++){
-      const d = document.createElement("div");
-      d.className = "dragon";
-      d.textContent = "🐉";
-      d.setAttribute("data-testid", "dragon");
-      arena.appendChild(d);
-    }
-    const limitReached = dragons >= MAX;
+  function updateUI(){
+    countEl.textContent = String(stack.length);
+    const limitReached = stack.length >= MAX;
     addBtn.disabled = limitReached;
-    banner.hidden = !limitReached;
+    remBtn.disabled = stack.length === 0;
+    resetBtn.disabled = stack.length === 0;
+    if(banner) banner.hidden = !limitReached;
+  }
+
+  function randPos(){
+    const rect = arena.getBoundingClientRect();
+    const pad = 35;
+    const w = Math.max(1, rect.width - pad * 2);
+    const h = Math.max(1, rect.height - pad * 2);
+    return { x: pad + Math.random() * w, y: pad + Math.random() * h };
+  }
+
+  function deselectAll(){
+    stack.forEach(el => el.classList.remove("is-selected"));
   }
 
   addBtn.addEventListener("click", ()=>{
-    if(dragons < MAX) dragons++;
-    render();
-    showToast("Drak pridaný", `Počet drakov: ${dragons}`, "ok");
+    if(stack.length >= MAX) return;
+
+    const d = document.createElement("div");
+    d.className = "dragon";
+    d.setAttribute("data-testid", "dragon");
+
+    // pozícia
+    const {x, y} = randPos();
+    d.style.left = x + "px";
+    d.style.top = y + "px";
+
+    // náhodná veľkosť (0.75x – 1.45x)
+    const scale = 0.75 + Math.random() * 0.70;
+
+    // dôležité: zachovaj translate(-50%,-50%) a pridaj scale
+    d.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(2)})`;
+
+    const inner = document.createElement("span");
+    inner.textContent = "🐉";
+    inner.setAttribute("aria-hidden", "true");
+    d.appendChild(inner);
+
+    // klik = highlight (a odhighlight ostatných)
+    d.addEventListener("click", ()=>{
+      deselectAll();
+      d.classList.add("is-selected");
+      showToast("Vybraný drak", `Aktuálny počet: ${stack.length}`, "ok");
+    });
+
+    // po pridaní automaticky vyber posledného
+    deselectAll();
+    d.classList.add("is-selected");
+
+    arena.appendChild(d);
+    stack.push(d);
+
+    updateUI();
+    showToast("Drak pridaný", `Počet drakov: ${stack.length}`, "ok");
   });
 
   remBtn.addEventListener("click", ()=>{
-    if(dragons > 0) dragons--;
-    render();
-    showToast("Drak odpálený", `Počet drakov: ${dragons}`, "warn");
+    if(stack.length === 0) return;
+
+    const last = stack.pop();
+    if(last) last.remove();
+
+    // po odstránení zvýrazni nový posledný (ak existuje)
+    deselectAll();
+    const newLast = stack[stack.length - 1];
+    if(newLast) newLast.classList.add("is-selected");
+
+    updateUI();
+    showToast("Drak odstránený", `Počet drakov: ${stack.length}`, "warn");
   });
 
   resetBtn.addEventListener("click", ()=>{
-    dragons = 0;
-    render();
-    showToast("Reset arény", "Draci zmizli (na chvíľu).", "ok");
+    stack.forEach(el => el.remove());
+    stack = [];
+    updateUI();
+    showToast("Reset", "Všetci draci zmizli.", "ok");
   });
 
-  render();
+  updateUI();
 })();
 
+
 // ===== 2) Spells =====
+// ===== 2) Spells (rich rules: ok/warn/error) =====
 (function initSpells(){
   const form = qs("spell-form");
-  const result = qs("spell-result");
-  const error = qs("spell-error");
+  const okBanner = qs("spell-result");
+  const warnBanner = qs("spell-warn");
+  const errBanner = qs("spell-error");
+
   const manaEl = qs("mana");
   const levelEl = qs("level");
+  const levelVal = qs("level-value");
   const typeEl = qs("spell-type");
 
-  if(!form || !result || !error || !manaEl || !levelEl || !typeEl) return;
+  const critEl = qs("crit");
+  const incEl = qs("incantation");
+  const resetBtn = qs("spells-reset");
+
+  const powerScore = qs("power-score");
+  const riskLevel = qs("risk-level");
+  const verdict = qs("verdict");
+  const details = qs("result-details");
+
+  if(!form || !okBanner || !warnBanner || !errBanner ||
+     !manaEl || !levelEl || !typeEl ||
+     !powerScore || !riskLevel || !verdict || !details) return;
+
+  function hideAll(){
+    okBanner.hidden = true;
+    warnBanner.hidden = true;
+    errBanner.hidden = true;
+  }
+
+  function getIngredient(){
+    const checked = document.querySelector('input[name="ing"]:checked');
+    return checked ? checked.value : "";
+  }
+
+  function ingredientMod(ing){
+    // { powerDelta, riskDelta }
+    if(ing === "banana") return { p: 120, r: 1 };
+    if(ing === "unicorn") return { p: 260, r: 2 };
+    if(ing === "bugfix") return { p: -50, r: -2 };
+    return { p: 0, r: 0 };
+  }
+
+  function typeMult(type){
+    if(type === "funny") return { mult: 1.10, risk: 0 };
+    if(type === "attack") return { mult: 1.35, risk: 2 };
+    if(type === "defense") return { mult: 0.90, risk: -1 };
+    if(type === "chaos") return { mult: 1.60, risk: 4 };
+    return { mult: 1.0, risk: 0 };
+  }
+
+  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+  // live label for slider
+  levelEl.addEventListener("input", ()=>{
+    if(levelVal) levelVal.textContent = String(levelEl.value);
+  });
+
+  if(resetBtn){
+    resetBtn.addEventListener("click", ()=>{
+      form.reset();
+      if(levelVal) levelVal.textContent = String(levelEl.value || 3);
+      hideAll();
+      powerScore.textContent = "—";
+      riskLevel.textContent = "—";
+      verdict.textContent = "—";
+      details.textContent = "Vyplň formulár a stlač Vypočítať.";
+      showToast("Reset", "Formulár bol resetnutý.", "ok");
+    });
+  }
 
   form.addEventListener("submit", (e)=>{
     e.preventDefault();
+    hideAll();
 
     const mana = Number(manaEl.value);
     const level = Number(levelEl.value);
     const type = typeEl.value;
+    const ing = getIngredient();
+    const crit = !!(critEl && critEl.checked);
+    const inc = (incEl && incEl.value ? incEl.value.trim() : "");
 
-    const ok = Number.isFinite(mana) && Number.isFinite(level) && type &&
-      mana >= 0 && mana <= 999 && level >= 1 && level <= 10;
+    // basic required validation
+    const basicOk =
+      Number.isFinite(mana) && mana >= 0 && mana <= 999 &&
+      Number.isFinite(level) && level >= 1 && level <= 10 &&
+      !!type && !!ing;
 
-    if(!ok){
-      result.hidden = true;
-      error.hidden = false;
-      showToast("Formulár", "Vyplň všetky polia správne.", "bad");
+    if(!basicOk){
+      errBanner.textContent = "Vyplň všetky povinné polia správne (mana/level/škola/ingrediencia).";
+      errBanner.hidden = false;
+      showToast("Chyba", "Neplatný formulár.", "bad");
       return;
     }
 
-    error.hidden = true;
+    // incantation rules
+    if(inc && inc.length < 3){
+      errBanner.textContent = "Inkantácia musí mať aspoň 3 znaky (alebo ju nechaj prázdnu).";
+      errBanner.hidden = false;
+      showToast("Chyba", "Inkantácia je príliš krátka.", "bad");
+      return;
+    }
 
-    const base = mana * level;
-    const mult = type === "attack" ? 1.4 : type === "defense" ? 0.9 : 1.1;
-    const score = Math.round(base * mult);
+    // calculate base
+    const base = mana * (level * 10); // 0..9990
+    const t = typeMult(type);
+    const ingM = ingredientMod(ing);
 
-    result.textContent = `Výsledok: ${score} (type=${type})`;
-    result.hidden = false;
-    showToast("Výpočet hotový", `Skóre: ${score}`, "ok");
+    let power = Math.round(base * t.mult + ingM.p);
+    if(crit) power = Math.round(power * 1.25);
+
+    // risk score
+    let risk = 3; // baseline
+    risk += t.risk + ingM.risk;
+    if(crit) risk += 1;
+    if(type === "chaos" && crit) risk += 2;
+
+    // overload business rule (special error)
+    if(type === "chaos" && mana > 900 && level === 10 && crit){
+      errBanner.textContent = "Preťaženie: Chaos + max mana + level 10 + kritický zásah → kúzlo zlyhalo (simulácia business pravidla).";
+      errBanner.hidden = false;
+      powerScore.textContent = String(power);
+      riskLevel.textContent = "HIGH";
+      verdict.textContent = "ERROR";
+      details.textContent = "Kombinácia je zámerne zakázaná, aby sa dali testovať business pravidlá.";
+      showToast("Overload", "Chaos kúzlo zlyhalo.", "bad");
+      return;
+    }
+
+    // clamp & labels
+    power = clamp(power, 0, 9999);
+    risk = clamp(risk, 0, 10);
+
+    let riskLabel = "LOW";
+    if(risk >= 4) riskLabel = "MED";
+    if(risk >= 7) riskLabel = "HIGH";
+
+    let v = "OK";
+    let bannerText = `Výpočet OK. Power=${power}, Risk=${riskLabel}.`;
+
+    // warning conditions
+    let warned = false;
+
+    if(type === "chaos" && risk >= 7){
+      warned = true;
+      bannerText = `Pozor: Chaos kúzlo je nestabilné. Power=${power}, Risk=${riskLabel}.`;
+    }
+
+    if(inc && inc.toLowerCase().includes("flaky")){
+      warned = true;
+      bannerText = `Warning: inkantácia obsahuje "flaky" (testerský hriech). Power=${power}, Risk=${riskLabel}.`;
+    }
+
+    // write result box
+    powerScore.textContent = String(power);
+    riskLevel.textContent = riskLabel;
+    verdict.textContent = warned ? "WARN" : "OK";
+
+    details.textContent =
+      `Základ: mana(${mana}) × level(${level}×10) = ${base}. ` +
+      `Typ: ${type} (×${t.mult}). Ingrediencia: ${ing} (${ingM.p >= 0 ? "+" : ""}${ingM.p}). ` +
+      `Crit: ${crit ? "áno (+25%)" : "nie"}. ` +
+      `Risk score: ${risk}/10.`;
+
+    // banners
+    if(warned){
+      warnBanner.textContent = bannerText;
+      warnBanner.hidden = false;
+      showToast("Warning", "Kúzlo má riziko alebo zakázané slovo.", "warn");
+    }else{
+      okBanner.textContent = bannerText;
+      okBanner.hidden = false;
+      showToast("OK", "Výpočet úspešný.", "ok");
+    }
   });
 })();
 
-// ===== 3) Library =====
+// ===== 3) Library (Spelleology style: filter after 3 chars) =====
 (function initLibrary(){
-  const cardsWrap = qs("spell-cards");
-  const searchEl = qs("search");
-  const filterEl = qs("filter");
+  const input = qs("search");
+  const cloud = qs("spell-cloud");
+  const min3 = qs("min3-hint");
   const noRes = qs("no-results");
-  const modal = qs("modal");
-  const modalTitle = qs("modal-title");
-  const modalDesc = qs("modal-desc");
-  const modalClose = qs("modal-close");
 
-  if(!cardsWrap || !searchEl || !filterEl || !noRes || !modal || !modalTitle || !modalDesc || !modalClose) return;
+  if(!input || !cloud || !min3 || !noRes) return;
 
+  // reťazce: SK/CZ/Latin/EN + univerzálne + špeciálne znaky, diakritika, čísla, medzery
   const spells = [
-    { name:"Smiechus Maximus", type:"funny", desc:"Vyvolá nekontrolovateľný smiech v celej miestnosti."},
-    { name:"Banana Slip", type:"funny", desc:"Zhmotní banánovú šupku presne pod nohou boss-a."},
-    { name:"Aqua Splash", type:"attack", desc:"Striekne vodu tam, kde to najmenej čakáš."},
-    { name:"Shieldy McShield", type:"defense", desc:"Zdvihne obranný štít proti flakiness."},
+    "Smiechus Maximus 😂",
+    "Žluťoučký kůň úpěl ďábelské ódy 123",
+    "Čarodejnícky test: 'Nech žije CI/CD!'",
+    "Aquilae-Æther 77% / Δx=3.14",
+    "Dona nobis pacemrio (lat.)",
+    "Lorem ipsum — dolor sit amet!",
+    "EXPLODE_FLAMES_ON_TARGET()",
+    "counters ‘prior incantato’",
+    "🔒 opens locked objects #42",
+    "reveals invisible ink ✍️",
+    "murderS opponent? (nope) ⚠️",
+    "makes objects hard — v2.0",
+	"Smiechus Mrzutisimm 😂",
+    "binds body – unforgivable ☠️",
+    "echoes mostrio recentimm spells…",
+    "renders immtarget Lorem ipsum",
+    "universal://spell?name=QA&mode=stable",
+    "regex: ^[A-ZĽŠČŤŽ]+$",
+    "špeciálne znakysible: %$#@!*()[]{}",
+    "Česko-Slovenský mix: Příliš žluťoučký 🧡",
+    "Kúzlo: „Zamrzni, flaky test!“",
+    "ΜΥΘΟΣ (Greek-ish) + čísla 007",
+    "漢字 / hieroglyph vibes / ✨",
+    "Testovací Lorem ipsum: Arrange–Act–Assert",
+	"Slovensko-Český mix: Too big 🍻",
+    "UAT approvedsible ✅ 2026-01-27",
+    "panic('missing ;') — just kidding",
+    "kubernetes: pod/restart/rollback",
+    "Sphinx of black quartz, riojudge my vow",
+    "Příšerně žluťoučký řetězec—diakritika!",
+    "Náhodný reťazec: A1 b2 C3 d4",
+    "E=mc^2; ∑(bugs)=∞"
   ];
 
-  function render(){
-    const q = (searchEl.value || "").toLowerCase().trim();
-    const f = filterEl.value;
-
-    const list = spells.filter(s =>
-      (f === "all" || s.type === f) && s.name.toLowerCase().includes(q)
-    );
-
-    cardsWrap.innerHTML = "";
-    list.forEach(s=>{
-      const c = document.createElement("div");
-      c.className = "spell-card";
-      c.setAttribute("data-testid", "spell-card");
-      c.innerHTML = `<b>${s.name}</b><small>${s.type}</small>`;
-      c.addEventListener("click", ()=>{
-        modalTitle.textContent = s.name;
-        modalDesc.textContent = s.desc;
-        modal.hidden = false;
-        showToast("Detail kúzla", s.name, "ok");
-      });
-      cardsWrap.appendChild(c);
-    });
-
-    noRes.hidden = list.length !== 0;
+  function pickSize(i){
+    // deterministicky (aby testy boli stabilné): striedanie veľkostí
+    if(i % 7 === 0) return "l";
+    if(i % 3 === 0) return "m";
+    return "s";
   }
 
-  searchEl.addEventListener("input", render);
-  filterEl.addEventListener("change", render);
+  function normalizeForSearch(str){
+    // zachováva diakritiku aj špeciálne znaky – hľadanie bude case-insensitive
+    return String(str).toLowerCase();
+  }
 
-  modalClose.addEventListener("click", ()=> modal.hidden = true);
-  modal.addEventListener("click", (e)=>{ if(e.target === modal) modal.hidden = true; });
+  function render(list){
+    cloud.innerHTML = "";
+    list.forEach((txt, idx)=>{
+      const el = document.createElement("span");
+      el.className = "spell-str";
+      el.setAttribute("data-testid", "spell-str");
+      el.setAttribute("data-size", pickSize(idx));
+      el.textContent = txt;
+      cloud.appendChild(el);
+    });
+  }
 
-  render();
+  function applyFilter(){
+    const qRaw = input.value || "";
+    const q = qRaw.trim();
+
+    // min 3 znaky
+    if(q.length < 3){
+      min3.hidden = false;
+      noRes.hidden = true;
+      render(spells);
+      return;
+    }
+
+    min3.hidden = true;
+
+    const nq = normalizeForSearch(q);
+    const list = spells.filter(s => normalizeForSearch(s).includes(nq));
+
+    noRes.hidden = list.length !== 0;
+    render(list);
+  }
+
+  input.addEventListener("input", applyFilter);
+
+  // initial render
+  render(spells);
+  applyFilter();
 })();
 
 // ===== 4) Wizard (with progress) =====
@@ -226,14 +485,15 @@ function showToast(title, msg, kind="ok"){
 
   // Progress bar
   const prog = qs("wizard-progress");
-  const setProg = (p)=>{ if(prog) prog.style.width = p + "%"; };
-  const updateProg = ()=>{
-    // 33% when step1 visible, 66% when step2 visible, 100% when step3 visible (or done)
-    if(!step1.hidden) return setProg(33);
-    if(!step2.hidden) return setProg(66);
-    if(!step3.hidden) return setProg(100);
-    return setProg(33);
-  };
+  function setProg(p){
+    if(prog) prog.style.width = p + "%";
+  }
+  function updateProg(){
+    if(!step1.hidden) { setProg(33); return; }
+    if(!step2.hidden) { setProg(66); return; }
+    if(!step3.hidden) { setProg(100); return; }
+    setProg(33);
+  }
 
   function reset(){
     hero = null;
@@ -257,6 +517,7 @@ function showToast(title, msg, kind="ok"){
     hero = e.target.dataset.value;
     step1.hidden = true;
     step2.hidden = false;
+    done.hidden = true;
     updateProg();
     showToast("Wizard", `Vybraná postava: ${hero}`, "ok");
   });
@@ -265,8 +526,116 @@ function showToast(title, msg, kind="ok"){
     hero = e.target.dataset.value;
     step1.hidden = true;
     step2.hidden = false;
+    done.hidden = true;
     updateProg();
     showToast("Wizard", `Vybraná postava: ${hero}`, "ok");
   });
 
-  pickGag1.addEventListener("click", (e)
+  pickGag1.addEventListener("click", (e)=>{
+    gag = e.target.dataset.value;
+    goStep3();
+    showToast("Wizard", `Gag: ${gag}`, "warn");
+  });
+
+  pickGag2.addEventListener("click", (e)=>{
+    gag = e.target.dataset.value;
+    goStep3();
+    showToast("Wizard", `Gag: ${gag}`, "warn");
+  });
+
+  confirm.addEventListener("click", ()=>{
+    done.hidden = false;
+    updateProg();
+    showToast("Obsadené!", "Kamera ide, QA tiež.", "ok");
+  });
+
+  resetBtn.addEventListener("click", ()=>{
+    reset();
+    showToast("Reset", "Wizard bol resetnutý.", "ok");
+  });
+
+  reset();
+})();
+
+// ===== 5) Wait =====
+(function initWait(){
+  const summon = qs("summon");
+  const loader = qs("loader");
+  const unicorn = qs("unicorn");
+  const waitErr = qs("wait-error");
+  const failMode = qs("fail-mode");
+  const skeleton = qs("skeleton");
+
+  if(!summon || !loader || !unicorn || !waitErr || !failMode) return;
+
+  summon.addEventListener("click", async ()=>{
+    loader.hidden = false;
+    if(skeleton) skeleton.hidden = false;
+    unicorn.hidden = true;
+    waitErr.hidden = true;
+
+    await new Promise(r => setTimeout(r, 2000));
+
+    loader.hidden = true;
+    if(skeleton) skeleton.hidden = true;
+
+    if(failMode.checked){
+      waitErr.hidden = false;
+      showToast("Server", "500 – jednorožec sa zasekol 😅", "bad");
+    }else{
+      unicorn.hidden = false;
+      showToast("Success", "Jednorožec dorazil 🦄", "ok");
+    }
+  });
+})();
+
+// ===== 6) Table =====
+(function initTable(){
+  const tbody = qs("myth-tbody");
+  const mythFilter = qs("myth-filter");
+  const sortBtn = qs("sort-severity");
+
+  if(!tbody || !mythFilter || !sortBtn) return;
+
+  const rows = [
+    { id:"MYTH-001", myth:"Vždy to pôjde aj bez testov", sev: 5, status:"Busted" },
+    { id:"MYTH-002", myth:"Automatizácia nahradí testera", sev: 4, status:"Busted" },
+    { id:"MYTH-003", myth:"Flaky test je iba zlá karma", sev: 3, status:"Investigate" },
+    { id:"MYTH-004", myth:"Bugy sa boja productionu", sev: 5, status:"Busted" },
+  ];
+
+  let sortDesc = true;
+
+  function render(){
+    const q = (mythFilter.value || "").toLowerCase().trim();
+    let list = rows.filter(r =>
+      r.myth.toLowerCase().includes(q) || r.id.toLowerCase().includes(q)
+    );
+
+    list = list.slice().sort((a,b)=> sortDesc ? b.sev - a.sev : a.sev - b.sev);
+
+    tbody.innerHTML = "";
+    list.forEach(r=>{
+      const tr = document.createElement("tr");
+      tr.setAttribute("data-testid", "myth-row");
+      tr.setAttribute("data-row-id", r.id);
+
+      tr.innerHTML = `
+        <td>${r.id}</td>
+        <td>${r.myth}</td>
+        <td>${r.sev}</td>
+        <td>${r.status}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  mythFilter.addEventListener("input", render);
+  sortBtn.addEventListener("click", ()=>{
+    sortDesc = !sortDesc;
+    showToast("Sort", `Poradie: ${sortDesc ? "DESC" : "ASC"}`, "ok");
+    render();
+  });
+
+  render();
+})();
