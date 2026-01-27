@@ -1,12 +1,54 @@
-// Tento skript je spoločný pre všetky stránky.
-// Každá časť sa spustí len vtedy, ak nájde svoje prvky v DOM (t. j. na príslušnej stránke).
-
 function qs(testId){
   return document.querySelector(`[data-testid="${testId}"]`);
 }
-function qsa(testId){
-  return Array.from(document.querySelectorAll(`[data-testid="${testId}"]`));
+
+function setTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("mbk-theme", theme);
 }
+
+(function initThemeAndNav(){
+  // Theme
+  const saved = localStorage.getItem("mbk-theme") || "dark";
+  setTheme(saved);
+
+  const toggle = qs("theme-toggle");
+  if(toggle){
+    toggle.textContent = saved === "light" ? "🌙 Dark" : "☀️ Light";
+    toggle.addEventListener("click", ()=>{
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      setTheme(next);
+      toggle.textContent = next === "light" ? "🌙 Dark" : "☀️ Light";
+      showToast("Téma zmenená", `Aktívna téma: ${next}`, "ok");
+    });
+  }
+
+  // Active nav highlighting (podľa názvu súboru)
+  const file = location.pathname.split("/").pop() || "index.html";
+  document.querySelectorAll(".nav a").forEach(a=>{
+    const href = a.getAttribute("href");
+    if(href === file) a.classList.add("active");
+  });
+})();
+
+function showToast(title, msg, kind="ok"){
+  const toast = qs("toast");
+  if(!toast) return;
+  qs("toast-title").textContent = title;
+  qs("toast-msg").textContent = msg;
+  toast.setAttribute("data-kind", kind);
+  toast.hidden = false;
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=> toast.hidden = true, 3000);
+}
+
+(function initToastClose(){
+  const close = qs("toast-close");
+  const toast = qs("toast");
+  if(!close || !toast) return;
+  close.addEventListener("click", ()=> toast.hidden = true);
+})();
 
 // 1) Drak add/remove + limit
 (function initDragon(){
@@ -37,9 +79,23 @@ function qsa(testId){
     banner.hidden = !limitReached;
   }
 
-  addBtn.addEventListener("click", ()=>{ if(dragons < MAX) dragons++; render(); });
-  remBtn.addEventListener("click", ()=>{ if(dragons > 0) dragons--; render(); });
-  resetBtn.addEventListener("click", ()=>{ dragons = 0; render(); });
+  addBtn.addEventListener("click", ()=>{
+    if(dragons < MAX) dragons++;
+    render();
+    showToast("Drak pridaný", `Počet drakov: ${dragons}`, "ok");
+  });
+
+  remBtn.addEventListener("click", ()=>{
+    if(dragons > 0) dragons--;
+    render();
+    showToast("Drak odpálený", `Počet drakov: ${dragons}`, "warn");
+  });
+
+  resetBtn.addEventListener("click", ()=>{
+    dragons = 0;
+    render();
+    showToast("Reset arény", "Draci zmizli (na chvíľu).", "ok");
+  });
 
   render();
 })();
@@ -67,6 +123,7 @@ function qsa(testId){
     if(!ok){
       result.hidden = true;
       error.hidden = false;
+      showToast("Formulár", "Vyplň všetky polia správne.", "bad");
       return;
     }
 
@@ -77,6 +134,7 @@ function qsa(testId){
 
     result.textContent = `Výsledok: ${score} (type=${type})`;
     result.hidden = false;
+    showToast("Výpočet hotový", `Skóre: ${score}`, "ok");
   });
 })();
 
@@ -112,13 +170,14 @@ function qsa(testId){
     cardsWrap.innerHTML = "";
     list.forEach(s=>{
       const c = document.createElement("div");
-      c.className = "card";
+      c.className = "spell-card";
       c.setAttribute("data-testid", "spell-card");
       c.innerHTML = `<b>${s.name}</b><small>${s.type}</small>`;
       c.addEventListener("click", ()=>{
         modalTitle.textContent = s.name;
         modalDesc.textContent = s.desc;
         modal.hidden = false;
+        showToast("Detail kúzla", s.name, "ok");
       });
       cardsWrap.appendChild(c);
     });
@@ -171,14 +230,22 @@ function qsa(testId){
     summary.textContent = `Postava: ${hero} | Gag: ${gag}`;
   }
 
-  pickHero1.addEventListener("click", (e)=>{ hero = e.target.dataset.value; step1.hidden = true; step2.hidden = false; });
-  pickHero2.addEventListener("click", (e)=>{ hero = e.target.dataset.value; step1.hidden = true; step2.hidden = false; });
+  pickHero1.addEventListener("click", (e)=>{
+    hero = e.target.dataset.value;
+    step1.hidden = true; step2.hidden = false;
+    showToast("Wizard", `Vybraná postava: ${hero}`, "ok");
+  });
+  pickHero2.addEventListener("click", (e)=>{
+    hero = e.target.dataset.value;
+    step1.hidden = true; step2.hidden = false;
+    showToast("Wizard", `Vybraná postava: ${hero}`, "ok");
+  });
 
-  pickGag1.addEventListener("click", (e)=>{ gag = e.target.dataset.value; goStep3(); });
-  pickGag2.addEventListener("click", (e)=>{ gag = e.target.dataset.value; goStep3(); });
+  pickGag1.addEventListener("click", (e)=>{ gag = e.target.dataset.value; goStep3(); showToast("Wizard", `Gag: ${gag}`, "warn"); });
+  pickGag2.addEventListener("click", (e)=>{ gag = e.target.dataset.value; goStep3(); showToast("Wizard", `Gag: ${gag}`, "warn"); });
 
-  confirm.addEventListener("click", ()=>{ done.hidden = false; });
-  resetBtn.addEventListener("click", reset);
+  confirm.addEventListener("click", ()=>{ done.hidden = false; showToast("Obsadené!", "Kamera ide, QA tiež.", "ok"); });
+  resetBtn.addEventListener("click", ()=>{ reset(); showToast("Reset", "Wizard bol resetnutý.", "ok"); });
 
   reset();
 })();
@@ -190,19 +257,28 @@ function qsa(testId){
   const unicorn = qs("unicorn");
   const waitErr = qs("wait-error");
   const failMode = qs("fail-mode");
+  const skeleton = qs("skeleton");
 
   if(!summon || !loader || !unicorn || !waitErr || !failMode) return;
 
   summon.addEventListener("click", async ()=>{
     loader.hidden = false;
+    if(skeleton) skeleton.hidden = false;
     unicorn.hidden = true;
     waitErr.hidden = true;
 
     await new Promise(r => setTimeout(r, 2000));
 
     loader.hidden = true;
-    if(failMode.checked) waitErr.hidden = false;
-    else unicorn.hidden = false;
+    if(skeleton) skeleton.hidden = true;
+
+    if(failMode.checked){
+      waitErr.hidden = false;
+      showToast("Server", "500 – jednorožec sa zasekol 😅", "bad");
+    }else{
+      unicorn.hidden = false;
+      showToast("Success", "Jednorožec dorazil 🦄", "ok");
+    }
   });
 })();
 
@@ -232,16 +308,3 @@ function qsa(testId){
     list = list.slice().sort((a,b)=> sortDesc ? b.sev - a.sev : a.sev - b.sev);
 
     tbody.innerHTML = "";
-    list.forEach(r=>{
-      const tr = document.createElement("tr");
-      tr.setAttribute("data-row-id", r.id);
-      tr.innerHTML = `<td>${r.id}</td><td>${r.myth}</td><td>${r.sev}</td><td>${r.status}</td>`;
-      tbody.appendChild(tr);
-    });
-  }
-
-  mythFilter.addEventListener("input", render);
-  sortBtn.addEventListener("click", ()=>{ sortDesc = !sortDesc; render(); });
-
-  render();
-})();

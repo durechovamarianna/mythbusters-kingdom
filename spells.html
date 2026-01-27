@@ -7,15 +7,34 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="top">
+<header class="topbar">
+  <div class="topbar-inner">
     <div class="brand">
-      <span class="logo">✨</span>
+      <div class="mark">🏰</div>
       <div>
-        <div class="title">Kalkulačka kúziel</div>
-        <div class="subtitle">Form + validation + deterministic output</div>
+        <div class="title">MythBusters Kingdom</div>
+        <div class="subtitle">IT tím plný nadšenia • UI na testovanie • Playwright ready</div>
       </div>
     </div>
-  </header>
+
+    <div class="actions">
+      <span class="badge" data-testid="build-badge"><span class="dot"></span> CI Ready</span>
+      <button class="btn ghost" data-testid="theme-toggle">☀️ Light</button>
+    </div>
+  </div>
+
+  <div class="topbar-inner" style="padding-top:0">
+    <nav class="nav" aria-label="Navigácia">
+      <a href="index.html" data-testid="nav-home">Domov</a>
+      <a href="dragon.html" data-testid="nav-dragon">Drak</a>
+      <a href="spells.html" data-testid="nav-spells">Kúzla</a>
+      <a href="library.html" data-testid="nav-library">Knižnica</a>
+      <a href="wizard.html" data-testid="nav-wizard">Wizard</a>
+      <a href="wait.html" data-testid="nav-wait">Wait</a>
+      <a href="table.html" data-testid="nav-table">Tabuľka</a>
+    </nav>
+  </div>
+</header>
 
   <nav class="tabs" aria-label="Navigácia">
     <a class="tab" href="index.html" data-testid="nav-home">Domov</a>
@@ -26,8 +45,9 @@
     <a class="tab" href="wait.html" data-testid="nav-wait">Wait for unicorn</a>
     <a class="tab" href="table.html" data-testid="nav-table">Tabuľka mýtov</a>
   </nav>
-
-  <main class="panel">
+<div class="container">
+  <div class="shell">
+  <main class="page">
     <section class="page active" data-testid="page-spells">
       <h1 data-testid="page-title">Kalkulačka kúziel</h1>
 
@@ -60,7 +80,23 @@
     </section>
   </main>
 
-  <footer class="foot"><div>© MythBusters Kingdom</div></footer>
+<footer class="footer">
+      <span>© MythBusters Kingdom</span>
+      <span>
+        <a href="index.html">Home</a> ·
+        <a href="table.html">Myths</a> ·
+        <a href="wait.html">Status</a>
+      </span>
+    </footer>
+  </div>
+</div>
   <script src="app.js"></script>
+<div class="toast" data-testid="toast" hidden>
+  <div>
+    <b data-testid="toast-title">Toast</b>
+    <p data-testid="toast-msg">Správa</p>
+  </div>
+  <button class="btn" data-testid="toast-close">OK</button>
+</div>
 </body>
 </html>
