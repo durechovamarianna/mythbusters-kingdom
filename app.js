@@ -83,7 +83,6 @@ function showToast(title, msg, kind="ok"){
   close.addEventListener("click", ()=> toast.hidden = true);
 })();
 
-// ===== 1) Dragon (0–77, random position, remove last, reset) =====
 // ===== 1) Dragon (0–77, random position + random size, click highlight) =====
 (function initDragon(){
   const arena = qs("dragon-arena");
@@ -98,12 +97,18 @@ function showToast(title, msg, kind="ok"){
   const MAX = 77;
   let stack = [];
 
+  // SK: Stabilné, deterministické ID pre testy (1,2,3...)
+  // EN: Stable, deterministic ID for tests (1,2,3...)
+  let nextDragonId = 1;
+
   function updateUI(){
     countEl.textContent = String(stack.length);
+
     const limitReached = stack.length >= MAX;
     addBtn.disabled = limitReached;
     remBtn.disabled = stack.length === 0;
     resetBtn.disabled = stack.length === 0;
+
     if(banner) banner.hidden = !limitReached;
   }
 
@@ -119,12 +124,19 @@ function showToast(title, msg, kind="ok"){
     stack.forEach(el => el.classList.remove("is-selected"));
   }
 
-  addBtn.addEventListener("click", ()=>{
+  addBtn.addEventListener("click", ()=> {
     if(stack.length >= MAX) return;
 
     const d = document.createElement("div");
     d.className = "dragon";
+
+    // SK: Playwright selektor pre všetkých drakov
+    // EN: Playwright selector for all dragons
     d.setAttribute("data-testid", "dragon");
+
+    // SK: Stabilné ID pre regresné testy (LIFO)
+    // EN: Stable ID for regression tests (LIFO)
+    d.setAttribute("data-dragon-id", String(nextDragonId++));
 
     // pozícia
     const {x, y} = randPos();
@@ -133,8 +145,6 @@ function showToast(title, msg, kind="ok"){
 
     // náhodná veľkosť (0.75x – 1.45x)
     const scale = 0.75 + Math.random() * 0.70;
-
-    // dôležité: zachovaj translate(-50%,-50%) a pridaj scale
     d.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(2)})`;
 
     const inner = document.createElement("span");
@@ -143,7 +153,7 @@ function showToast(title, msg, kind="ok"){
     d.appendChild(inner);
 
     // klik = highlight (a odhighlight ostatných)
-    d.addEventListener("click", ()=>{
+    d.addEventListener("click", ()=> {
       deselectAll();
       d.classList.add("is-selected");
       showToast("Vybraný drak", `Aktuálny počet: ${stack.length}`, "ok");
@@ -160,7 +170,7 @@ function showToast(title, msg, kind="ok"){
     showToast("Drak pridaný", `Počet drakov: ${stack.length}`, "ok");
   });
 
-  remBtn.addEventListener("click", ()=>{
+  remBtn.addEventListener("click", ()=> {
     if(stack.length === 0) return;
 
     const last = stack.pop();
@@ -175,9 +185,14 @@ function showToast(title, msg, kind="ok"){
     showToast("Drak odstránený", `Počet drakov: ${stack.length}`, "warn");
   });
 
-  resetBtn.addEventListener("click", ()=>{
+  resetBtn.addEventListener("click", ()=> {
     stack.forEach(el => el.remove());
     stack = [];
+
+    // SK: po resete začneme ID znova od 1 (deterministické)
+    // EN: after reset, restart IDs from 1 (deterministic)
+    nextDragonId = 1;
+
     updateUI();
     showToast("Reset", "Všetci draci zmizli.", "ok");
   });
@@ -186,7 +201,6 @@ function showToast(title, msg, kind="ok"){
 })();
 
 
-// ===== 2) Spells =====
 // ===== 2) Spells (rich rules: ok/warn/error) =====
 (function initSpells(){
   const form = qs("spell-form");
@@ -325,17 +339,14 @@ function showToast(title, msg, kind="ok"){
     if(risk >= 4) riskLabel = "MED";
     if(risk >= 7) riskLabel = "HIGH";
 
-    let v = "OK";
     let bannerText = `Výpočet OK. Power=${power}, Risk=${riskLabel}.`;
-
-    // warning conditions
     let warned = false;
 
+    // warning conditions
     if(type === "chaos" && risk >= 7){
       warned = true;
       bannerText = `Pozor: Chaos kúzlo je nestabilné. Power=${power}, Risk=${riskLabel}.`;
     }
-
     if(inc && inc.toLowerCase().includes("flaky")){
       warned = true;
       bannerText = `Warning: inkantácia obsahuje "flaky" (testerský hriech). Power=${power}, Risk=${riskLabel}.`;
@@ -374,7 +385,6 @@ function showToast(title, msg, kind="ok"){
 
   if(!input || !cloud || !min3 || !noRes) return;
 
-  // reťazce: SK/CZ/Latin/EN + univerzálne + špeciálne znaky, diakritika, čísla, medzery
   const spells = [
     "Smiechus Maximus 😂",
     "Žluťoučký kůň úpěl ďábelské ódy 123",
@@ -388,7 +398,7 @@ function showToast(title, msg, kind="ok"){
     "reveals invisible ink ✍️",
     "murderS opponent? (nope) ⚠️",
     "makes objects hard — v2.0",
-	"Smiechus Mrzutisimm 😂",
+    "Smiechus Mrzutisimm 😂",
     "binds body – unforgivable ☠️",
     "echoes mostrio recentimm spells…",
     "renders immtarget Lorem ipsum",
@@ -400,7 +410,7 @@ function showToast(title, msg, kind="ok"){
     "ΜΥΘΟΣ (Greek-ish) + čísla 007",
     "漢字 / hieroglyph vibes / ✨",
     "Testovací Lorem ipsum: Arrange–Act–Assert",
-	"Slovensko-Český mix: Too big 🍻",
+    "Slovensko-Český mix: Too big 🍻",
     "UAT approvedsible ✅ 2026-01-27",
     "panic('missing ;') — just kidding",
     "kubernetes: pod/restart/rollback",
@@ -411,14 +421,12 @@ function showToast(title, msg, kind="ok"){
   ];
 
   function pickSize(i){
-    // deterministicky (aby testy boli stabilné): striedanie veľkostí
     if(i % 7 === 0) return "l";
     if(i % 3 === 0) return "m";
     return "s";
   }
 
   function normalizeForSearch(str){
-    // zachováva diakritiku aj špeciálne znaky – hľadanie bude case-insensitive
     return String(str).toLowerCase();
   }
 
@@ -438,7 +446,6 @@ function showToast(title, msg, kind="ok"){
     const qRaw = input.value || "";
     const q = qRaw.trim();
 
-    // min 3 znaky
     if(q.length < 3){
       min3.hidden = false;
       noRes.hidden = true;
@@ -457,7 +464,6 @@ function showToast(title, msg, kind="ok"){
 
   input.addEventListener("input", applyFilter);
 
-  // initial render
   render(spells);
   applyFilter();
 })();
@@ -483,7 +489,6 @@ function showToast(title, msg, kind="ok"){
   let hero = null;
   let gag = null;
 
-  // Progress bar
   const prog = qs("wizard-progress");
   function setProg(p){
     if(prog) prog.style.width = p + "%";
