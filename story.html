@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Príbeh — výber postáv</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- TOP: MBK header (rovnaký ako ostatné stránky) -->
+  <header class="mbk-top">
+    <div class="mbk-top__inner">
+      <div class="mbk-brand" data-testid="brand">
+        <span class="mbk-brand__logo" aria-hidden="true">🧪</span>
+        <div class="mbk-brand__text">
+          <div class="mbk-brand__title">MythBusters Kingdom</div>
+          <div class="mbk-brand__subtitle">Playwright UI Playground • CI/CD ready</div>
+        </div>
+      </div>
+
+      <div class="mbk-actions">
+        <button class="mbk-btn mbk-btn--ghost" data-testid="theme-toggle" type="button">🎨 Theme</button>
+      </div>
+    </div>
+
+    <nav class="mbk-navcards" aria-label="Navigácia" data-testid="nav">
+      <a class="navcard" href="index.html" data-testid="nav-home">
+        <div class="navcard__icon" aria-hidden="true">🏠</div>
+        <div class="navcard__text">
+          <div class="navcard__title">Domov</div>
+          <div class="navcard__meta">welcome + links</div>
+        </div>
+      </a>
+
+      <a class="navcard" href="dragon.html" data-testid="nav-dragon">
+        <div class="navcard__icon" aria-hidden="true">🐉</div>
+        <div class="navcard__text">
+          <div class="navcard__title">Drak</div>
+          <div class="navcard__meta">DOM + limit</div>
+        </div>
+      </a>
+
+      <a class="navcard" href="library.html" data-testid="nav-library">
+        <div class="navcard__icon" aria-hidden="true">📚</div>
+        <div class="navcard__text">
+          <div class="navcard__title">Knižnica</div>
+          <div class="navcard__meta">search + select</div>
+        </div>
+      </a>
+
+      <a class="navcard" href="story.html" data-testid="nav-story">
+        <div class="navcard__icon" aria-hidden="true">📜</div>
+        <div class="navcard__text">
+          <div class="navcard__title">Príbeh</div>
+          <div class="navcard__meta">budget + pick</div>
+        </div>
+      </a>
+    </nav>
+  </header>
+
+  <!-- PAGE -->
+  <main class="mbk-page mbk-page--story" data-testid="page-story">
+    <header class="story-head">
+      <div class="story-head__title">
+        <div class="story-badge" aria-hidden="true">📜</div>
+        <div>
+          <h1 class="story-h1" data-testid="page-title">Príbeh — výber postáv</h1>
+          <p class="story-subtitle">
+            Vyber postavy do rozprávky. Každý výber stojí body z budgetu. Každú postavu vieš vybrať iba raz.
+          </p>
+        </div>
+      </div>
+
+      <div class="story-toolbar">
+        <button class="mbk-btn" type="button" data-testid="btn-reset">Reset</button>
+        <button class="mbk-btn mbk-btn--primary" type="button" data-testid="btn-random">Random pick</button>
+        <span class="story-pill" data-testid="pill-rules">Pravidlá: 1 klik = 1 výber • bez dvojitého kliku</span>
+      </div>
+    </header>
+
+    <section class="story-grid">
+      <!-- Budget panel -->
+      <div class="story-panel" data-testid="budget-card">
+        <div class="story-panel__hd">
+          <h2>Budget</h2>
+          <span class="story-pill" data-testid="budget-status">Ready</span>
+        </div>
+
+        <div class="story-panel__bd">
+          <div class="story-budget-row">
+            <div>
+              <div class="story-budget-value" data-testid="budget-remaining" aria-live="polite">25</div>
+              <div class="story-budget-max">z <span data-testid="budget-total">25</span> bodov</div>
+            </div>
+            <div class="story-pill" data-testid="budget-spent">
+              Minuté: <strong><span data-testid="budget-used">0</span></strong>
+            </div>
+          </div>
+
+          <div class="story-meter" aria-label="Budget meter">
+            <div data-testid="budget-meter"></div>
+          </div>
+
+          <div class="story-list">
+            <div>
+              <div class="story-pill">Vybrané postavy</div>
+              <div class="story-picked" data-testid="picked-list" aria-live="polite"></div>
+              <div class="story-hint" data-testid="picked-empty">Zatiaľ nič. Klikni na kartu postavy vpravo.</div>
+            </div>
+
+            <div class="story-hint">
+              Tip na testy: vyber postavu a skontroluj budget, potom skús random pick, a nakoniec reset.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Characters panel -->
+      <div class="story-panel" data-testid="characters-panel">
+        <div class="story-panel__hd">
+          <h2>Postavy</h2>
+          <span class="story-pill" data-testid="characters-count">0 vybraných</span>
+        </div>
+
+        <div class="story-panel__bd">
+          <div class="story-cards" data-testid="characters-grid">
+            <!-- Cards are rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mbk-footer" data-testid="footer">
+    <div class="mbk-footer__inner">
+      <div>© MythBusters Kingdom</div>
+      <div class="mbk-footer__links">
+        <a href="index.html" data-testid="footer-home">Home</a>
+        <a href="dragon.html" data-testid="footer-dragon">Dragon</a>
+        <a href="library.html" data-testid="footer-library">Library</a>
+        <a href="story.html" data-testid="footer-story">Story</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Global toast (shared across pages) - MUST be only once per page -->
+  <div class="toast" data-testid="toast" hidden>
+    <strong data-testid="toast-title"></strong>
+    <p data-testid="toast-msg"></p>
+    <button class="mbk-btn mbk-btn--ghost" type="button" data-testid="toast-close">Close</button>
+  </div>
+
+  <!-- Shared app behavior (theme, nav active, toast handling, dragon, library...) -->
+  <script src="app.js"></script>
+
+  <!-- Story page JS (guarded + test-safe) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const MAX_BUDGET = 25;
+
+      const CHARACTERS = [
+        { id: "king", name: "Kráľ", cost: 6, icon: "👑", desc: "Vládca kráľovstva, má rád poriadok a zákony." },
+        { id: "queen", name: "Kráľovná", cost: 6, icon: "👸", desc: "Múdra a prísna, ale férová. Vie vyjednávať." },
+        { id: "jester", name: "Šašo", cost: 2, icon: "🃏", desc: "Rozosmeje dvor aj v najhorší deň." },
+        { id: "princess", name: "Princezná", cost: 5, icon: "✨", desc: "Odvážna, nenechá sa len tak zachrániť." },
+        { id: "knight", name: "Rytier", cost: 4, icon: "🛡️", desc: "Česť, odvaha, a občas trochu dramatický." },
+        { id: "wizard", name: "Čarodej", cost: 7, icon: "🧙", desc: "Vie kúzla, ale má svoje pravidlá." },
+        { id: "witch", name: "Ježibaba", cost: 5, icon: "🧹", desc: "Vie viac, než hovorí. Dáva hádanky." },
+        { id: "dragon3", name: "Drak trojhlavý", cost: 8, icon: "🐲", desc: "Tri hlavy, tri názory, jeden problém." },
+        { id: "dragon7", name: "Drak sedemhlavý", cost: 10, icon: "🔥", desc: "Boss level. Bez prípravy neodporúčame." },
+        { id: "wolf", name: "Vlk", cost: 3, icon: "🐺", desc: "Ticho, rýchlo a s vlastnou agendou." },
+        { id: "giant", name: "Obor", cost: 7, icon: "🗿", desc: "Veľký, silný, nie vždy najjemnejší." },
+        { id: "fairy", name: "Víla", cost: 4, icon: "🧚", desc: "Pomáha, ale chce, aby si sa niečo naučila." },
+        { id: "thief", name: "Zlodej", cost: 3, icon: "🧤", desc: "Vie sa dostať všade. Aj do problémov." }
+      ];
+
+      const state = {
+        remaining: MAX_BUDGET,
+        selectedIds: new Set()
+      };
+
+      // Elements
+      const elGrid = document.querySelector('[data-testid="characters-grid"]');
+      const elRemaining = document.querySelector('[data-testid="budget-remaining"]');
+      const elUsed = document.querySelector('[data-testid="budget-used"]');
+      const elTotal = document.querySelector('[data-testid="budget-total"]');
+      const elMeter = document.querySelector('[data-testid="budget-meter"]');
+      const elPicked = document.querySelector('[data-testid="picked-list"]');
+      const elPickedEmpty = document.querySelector('[data-testid="picked-empty"]');
+      const elCount = document.querySelector('[data-testid="characters-count"]');
+      const btnReset = document.querySelector('[data-testid="btn-reset"]');
+      const btnRandom = document.querySelector('[data-testid="btn-random"]');
+
+      // Guard
+      const required = [elGrid, elRemaining, elUsed, elTotal, elMeter, elPicked, elPickedEmpty, elCount, btnReset, btnRandom];
+      if (required.some(x => !x)) {
+        console.warn("Story: required DOM elements missing, script not initialized.");
+        return;
+      }
+
+      function toast(title, msg, kind = "ok") {
+        if (typeof window.showToast === "function") {
+          window.showToast(title, msg, kind);
+        }
+      }
+
+      function updateBudgetUI() {
+        const used = MAX_BUDGET - state.remaining;
+
+        elRemaining.textContent = String(state.remaining);
+        elUsed.textContent = String(used);
+        elTotal.textContent = String(MAX_BUDGET);
+
+        const pct = (used / MAX_BUDGET) * 100;
+        elMeter.style.width = pct.toFixed(2) + "%";
+
+        elCount.textContent = `${state.selectedIds.size} vybraných`;
+
+        // Picked list
+        elPicked.innerHTML = "";
+        const selectedChars = CHARACTERS.filter(c => state.selectedIds.has(c.id));
+
+        if (selectedChars.length === 0) {
+          elPickedEmpty.style.display = "block";
+        } else {
+          elPickedEmpty.style.display = "none";
+          selectedChars.forEach(c => {
+            const tag = document.createElement("span");
+            tag.className = "story-tag";
+            tag.setAttribute("data-testid", `picked-${c.id}`);
+            tag.textContent = `${c.icon} ${c.name} (-${c.cost})`;
+            elPicked.appendChild(tag);
+          });
+        }
+      }
+
+      function canPick(character) {
+        return !state.selectedIds.has(character.id) && state.remaining >= character.cost;
+      }
+
+      function renderCards() {
+        elGrid.innerHTML = "";
+
+        CHARACTERS.forEach(character => {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "story-card";
+          card.setAttribute("data-testid", `char-${character.id}`);
+          card.setAttribute("data-cost", String(character.cost));
+          card.setAttribute("aria-pressed", "false");
+
+          const selected = state.selectedIds.has(character.id);
+          const insufficient = state.remaining < character.cost;
+
+          if (selected) {
+            card.classList.add("is-selected");
+            card.disabled = true;
+            card.setAttribute("aria-pressed", "true");
+            card.setAttribute("data-selected", "true");
+          } else if (insufficient) {
+            card.classList.add("is-disabled");
+            card.disabled = true;
+            card.setAttribute("data-disabled-reason", "insufficient-budget");
+          }
+
+          // content
+          const icon = document.createElement("div");
+          icon.className = "story-icon";
+          icon.textContent = character.icon;
+          icon.setAttribute("aria-hidden", "true");
+
+          const meta = document.createElement("div");
+          meta.className = "story-meta";
+
+          const name = document.createElement("p");
+          name.className = "story-name";
+          name.textContent = character.name;
+
+          const desc = document.createElement("p");
+          desc.className = "story-desc";
+          desc.textContent = character.desc;
+
+          meta.appendChild(name);
+          meta.appendChild(desc);
+
+          const cost = document.createElement("div");
+          cost.className = "story-cost";
+          cost.setAttribute("data-testid", `cost-${character.id}`);
+          cost.textContent = `-${character.cost}`;
+
+          card.appendChild(icon);
+          card.appendChild(meta);
+          card.appendChild(cost);
+
+          // Click
+          card.addEventListener("click", () => {
+            if (state.selectedIds.has(character.id)) return;
+
+            if (state.remaining < character.cost) {
+              toast("Budget", `Nemáš budget na "${character.name}" (potrebuje ${character.cost}).`, "warn");
+              return;
+            }
+
+            state.selectedIds.add(character.id);
+            state.remaining -= character.cost;
+
+            updateBudgetUI();
+            renderCards();
+            toast("Vybrané", `Pridaná postava "${character.name}" (-${character.cost}).`, "ok");
+          });
+
+          elGrid.appendChild(card);
+        });
+      }
+
+      function resetAll() {
+        state.remaining = MAX_BUDGET;
+        state.selectedIds = new Set();
+        updateBudgetUI();
+        renderCards();
+        toast("Reset", "Reset hotový.", "ok");
+      }
+
+      function randomPick() {
+        const candidates = CHARACTERS.filter(c => canPick(c));
+        if (candidates.length === 0) {
+          toast("Random", "Žiadna postava sa už nezmestí do budgetu.", "warn");
+          return;
+        }
+
+        const pick = candidates[Math.floor(Math.random() * candidates.length)];
+        state.selectedIds.add(pick.id);
+        state.remaining -= pick.cost;
+
+        updateBudgetUI();
+        renderCards();
+        toast("Random", `Vybraná postava "${pick.name}" (-${pick.cost}).`, "ok");
+      }
+
+      btnReset.addEventListener("click", resetAll);
+      btnRandom.addEventListener("click", randomPick);
+
+      // Init
+      updateBudgetUI();
+      renderCards();
+    });
+  </script>
+</body>
+</html>
