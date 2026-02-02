@@ -20,8 +20,8 @@ test.describe("E2E – Library user flow", () => {
     // EN: Navigate to library.
     await page.getByTestId("nav-library").click();
     await expect(page.getByTestId("page-library")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Knižnica");
-    
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Knihovník");
+
     // SK/EN: Active nav item is highlighted.
     await expectNavActive(page, "nav-library");
 
