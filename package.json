@@ -3,8 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
+  "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "playwright test",
+
+    "test:smoke": "playwright test tests/smoke",
+    "test:regression": "playwright test tests/regression",
+    "test:e2e": "playwright test tests/e2e",
+
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+
+    "test:smoke:headed": "playwright test tests/smoke --headed",
+    "test:debug": "playwright test --debug"
   },
   "repository": {
     "type": "git",
@@ -13,7 +24,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/durechovamarianna/mythbusters-kingdom/issues"
   },

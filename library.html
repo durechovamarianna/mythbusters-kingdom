@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Knihovník – Knižnica kúziel</title>
+  <title>Knihovník</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -11,12 +11,13 @@
 <header class="mbk-top">
   <div class="mbk-top__inner">
     <div class="mbk-brand" data-testid="brand">
-      <span class="mbk-brand__logo" aria-hidden="true">📜</span>
+      <span class="mbk-brand__logo" aria-hidden="true">🧪</span>
       <div class="mbk-brand__text">
         <div class="mbk-brand__title">MythBusters Kingdom</div>
         <div class="mbk-brand__subtitle">Playwright UI Playground • CI/CD ready</div>
       </div>
     </div>
+
     <div class="mbk-actions">
       <button class="mbk-btn mbk-btn--ghost" data-testid="theme-toggle" type="button">🎨 Theme</button>
     </div>
@@ -24,56 +25,98 @@
 
   <nav class="mbk-navcards" aria-label="Navigácia" data-testid="nav">
     <a class="navcard" href="index.html" data-testid="nav-home">
-      <div class="navcard__icon">🏠</div><div class="navcard__text"><div class="navcard__title">Domov</div><div class="navcard__meta">welcome + links</div></div>
+      <div class="navcard__icon" aria-hidden="true">🏠</div>
+      <div class="navcard__text">
+        <div class="navcard__title">Domov</div>
+        <div class="navcard__meta">welcome + links</div>
+      </div>
     </a>
+
     <a class="navcard" href="dragon.html" data-testid="nav-dragon">
-      <div class="navcard__icon">🐉</div><div class="navcard__text"><div class="navcard__title">Drak</div><div class="navcard__meta">DOM + limit</div></div>
+      <div class="navcard__icon" aria-hidden="true">🐉</div>
+      <div class="navcard__text">
+        <div class="navcard__title">Drak</div>
+        <div class="navcard__meta">DOM + limit</div>
+      </div>
     </a>
+
     <a class="navcard" href="spells.html" data-testid="nav-spells">
-      <div class="navcard__icon">✨</div><div class="navcard__text"><div class="navcard__title">Kúzla</div><div class="navcard__meta">form + rules</div></div>
+      <div class="navcard__icon" aria-hidden="true">✨</div>
+      <div class="navcard__text">
+        <div class="navcard__title">Kúzla</div>
+        <div class="navcard__meta">form + validation</div>
+      </div>
     </a>
+
     <a class="navcard is-active" href="library.html" data-testid="nav-library">
-      <div class="navcard__icon">📚</div><div class="navcard__text"><div class="navcard__title">Knižnica</div><div class="navcard__meta">search + filter</div></div>
+      <div class="navcard__icon" aria-hidden="true">📚</div>
+      <div class="navcard__text">
+        <div class="navcard__title">Knižnica</div>
+        <div class="navcard__meta">spelleology cloud</div>
+      </div>
     </a>
+
     <a class="navcard" href="wizard.html" data-testid="nav-wizard">
-      <div class="navcard__icon">🧙</div><div class="navcard__text"><div class="navcard__title">Wizard</div><div class="navcard__meta">multi-step</div></div>
+      <div class="navcard__icon" aria-hidden="true">🧙</div>
+      <div class="navcard__text">
+        <div class="navcard__title">Wizard</div>
+        <div class="navcard__meta">multi-step</div>
+      </div>
     </a>
+
     <a class="navcard" href="wait.html" data-testid="nav-wait">
-      <div class="navcard__icon">⏳</div><div class="navcard__text"><div class="navcard__title">Wait</div><div class="navcard__meta">loader + error</div></div>
+      <div class="navcard__icon" aria-hidden="true">⏳</div>
+      <div class="navcard__text">
+        <div class="navcard__title">Wait</div>
+        <div class="navcard__meta">loader + error</div>
+      </div>
     </a>
+
     <a class="navcard" href="table.html" data-testid="nav-table">
-      <div class="navcard__icon">📊</div><div class="navcard__text"><div class="navcard__title">Tabuľka</div><div class="navcard__meta">sort + filter</div></div>
+      <div class="navcard__icon" aria-hidden="true">📊</div>
+      <div class="navcard__text">
+        <div class="navcard__title">Tabuľka</div>
+        <div class="navcard__meta">sort + filter</div>
+      </div>
     </a>
   </nav>
 </header>
 
-<main class="mbk-page spelleology-theme" data-testid="page-library">
+<main class="mbk-page mbk-page--library" data-testid="page-library">
 
+  <!-- “Spelleology” hero -->
   <section class="spelleology-hero">
-    <h1 class="spelleology-title" data-testid="page-title">Knihovník</h1>
+    <h1 class="spelleology-title" data-testid="page-title">Spelleology</h1>
 
     <div class="spelleology-search">
-      <label class="spelleology-label" for="search">search for spell effect</label>
-      <input id="search" type="text" data-testid="search"
-             placeholder="napr. smiech / žluťoučký / Æther-77 / %$# / 123..."
-             autocomplete="off" />
-      <div class="spelleology-rule">
-        Filtruje sa až po zadaní <b>min. 3 znakov</b>. Reťazce môžu obsahovať diakritiku, veľké/malé písmená, čísla a špeciálne znaky.
+      <label class="spelleology-label" for="search">
+        search for spell effect (min. 3 znaky)
+      </label>
+
+      <input
+        id="search"
+        data-testid="search"
+        placeholder="napr. lum | acc | guard | invis"
+        autocomplete="off"
+      />
+
+      <div class="spelleology-rule" data-testid="min3-hint">
+        Zadaj aspoň <b>3 znaky</b>, až potom filtrujem.
+      </div>
+
+      <div class="spelleology-rule" data-testid="no-results" hidden>
+        Nič sa nenašlo 😅 Skús iný reťazec.
       </div>
     </div>
   </section>
 
-  <section class="spelleology-board" aria-label="Zoznam kúziel">
-    <!-- stavové hlášky pre testy -->
-    <div class="spelleology-status" data-testid="min3-hint">
-      Zadaj aspoň <b>3 znaky</b>, aby sa spustilo filtrovanie.
+  <!-- Board -->
+  <section class="spelleology-board">
+    <div class="spelleology-status">
+      Tip: klikni na ľubovoľné zaklínadlo → zvýrazní sa (iba jedno naraz).  
+      Selektory: <b>search</b>, <b>spell-str</b>, <b>.is-selected</b>
     </div>
 
-    <div class="spelleology-status" data-testid="no-results" hidden>
-      Nič sa nenašlo. Skús iný výraz.
-    </div>
-
-    <!-- sem sa renderujú reťazce -->
     <div class="spelleology-cloud" data-testid="spell-cloud"></div>
   </section>
 
@@ -90,6 +133,7 @@
   </div>
 </footer>
 
+<!-- Toast (pred app.js, aby sa initol close) -->
 <div class="toast" data-testid="toast" hidden>
   <div>
     <b data-testid="toast-title">Toast</b>
