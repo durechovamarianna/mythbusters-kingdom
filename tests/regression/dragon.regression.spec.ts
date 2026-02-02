@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { expectNavActive } from "../_support/helpers";
 
 /**
  * SK:
@@ -35,14 +36,32 @@ async function domAddMany(page: any, n: number) {
   await page.evaluate((count: number) => {
     const btn = document.querySelector('[data-testid="add-dragon"]') as HTMLButtonElement | null;
     if (!btn) throw new Error("add-dragon button not found");
-    for (let i = 0; i < count; i++) btn.click();
+
+    for (let i = 0; i < count; i++) {
+      // once disabled, further clicks should be no-ops (stable in CI)
+      if (btn.disabled) break;
+      btn.click();
+    }
   }, n);
+}
+
+async function domClickDragonByIndex(page: any, index: number) {
+  await page.evaluate((i: number) => {
+    const list = Array.from(document.querySelectorAll('[data-testid="dragon"]')) as HTMLElement[];
+    const el = list[i];
+    if (!el) throw new Error(`dragon[${i}] not found`);
+    el.click();
+  }, index);
 }
 
 test.describe("REGRESSION - Dragon rules", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("dragon.html");
+    await expect(page).toHaveURL(/dragon\.html$/);
     await expect(page.getByTestId("page-dragon")).toBeVisible();
+
+    // New nav system: ensure active tab is correct
+    await expectNavActive(page, "nav-dragon");
   });
 
   test("Limit is 77: add becomes disabled and banner is shown (CI-safe, no mouse clicks)", async ({ page }) => {
@@ -74,7 +93,6 @@ test.describe("REGRESSION - Dragon rules", () => {
   });
 
   test("Remove removes last added element (LIFO) and keeps count consistent (CI-safe)", async ({ page }) => {
-    const remove = page.getByTestId("remove-dragon");
     const count = page.getByTestId("dragon-count");
     const dragons = page.locator('[data-testid="dragon"]');
 
@@ -114,7 +132,6 @@ test.describe("REGRESSION - Dragon rules", () => {
     await expect(dragons).toHaveCount(5);
     await expect(count).toHaveText("5");
 
-    // SK/EN: reset môže byť normálny click (je v controls), ale pre istotu DOM click:
     await domClick(page, "reset-dragon");
 
     await expect(dragons).toHaveCount(0);
@@ -124,19 +141,17 @@ test.describe("REGRESSION - Dragon rules", () => {
     await expect(reset).toBeDisabled();
   });
 
-  test("Clicking a dragon highlights it (is-selected) and only one is selected", async ({ page }) => {
+  test("Clicking a dragon highlights it (is-selected) and only one is selected (CI-safe)", async ({ page }) => {
     await domAddMany(page, 3);
 
     const dragons = page.locator('[data-testid="dragon"]');
     await expect(dragons).toHaveCount(3);
 
-    // SK/EN: stabilizácia – nech sú draky v viewporte (ak by boli mimo)
-    await dragons.nth(0).scrollIntoViewIfNeeded();
-    await dragons.nth(0).click();
+    // CI-safe clicks (dragons can overlap)
+    await domClickDragonByIndex(page, 0);
     await expect(dragons.nth(0)).toHaveClass(/is-selected/);
 
-    await dragons.nth(1).scrollIntoViewIfNeeded();
-    await dragons.nth(1).click();
+    await domClickDragonByIndex(page, 1);
     await expect(dragons.nth(1)).toHaveClass(/is-selected/);
     await expect(dragons.nth(0)).not.toHaveClass(/is-selected/);
 

@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<!-- TOP: Navigácia z kartičiek (rovnaká ako index.html) -->
+<!-- TOP: rovnaký ako index -->
 <header class="mbk-top">
   <div class="mbk-top__inner">
     <div class="mbk-brand" data-testid="brand">
@@ -33,7 +33,7 @@
       </div>
     </a>
 
-    <a class="navcard is-active" href="dragon.html" data-testid="nav-dragon">
+    <a class="navcard" href="dragon.html" data-testid="nav-dragon">
       <div class="navcard__icon" aria-hidden="true">🐉</div>
       <div class="navcard__text">
         <div class="navcard__title">Drak</div>
@@ -41,104 +41,72 @@
       </div>
     </a>
 
-    <a class="navcard" href="spells.html" data-testid="nav-spells">
-      <div class="navcard__icon" aria-hidden="true">✨</div>
-      <div class="navcard__text">
-        <div class="navcard__title">Kúzla</div>
-        <div class="navcard__meta">form + validation</div>
-      </div>
-    </a>
-
     <a class="navcard" href="library.html" data-testid="nav-library">
       <div class="navcard__icon" aria-hidden="true">📚</div>
       <div class="navcard__text">
         <div class="navcard__title">Knižnica</div>
-        <div class="navcard__meta">search + modal</div>
+        <div class="navcard__meta">search + select</div>
       </div>
     </a>
 
-    <a class="navcard" href="wizard.html" data-testid="nav-wizard">
-      <div class="navcard__icon" aria-hidden="true">🧙</div>
+    <a class="navcard" href="story.html" data-testid="nav-story">
+      <div class="navcard__icon" aria-hidden="true">📜</div>
       <div class="navcard__text">
-        <div class="navcard__title">Wizard</div>
-        <div class="navcard__meta">multi-step</div>
-      </div>
-    </a>
-
-    <a class="navcard" href="wait.html" data-testid="nav-wait">
-      <div class="navcard__icon" aria-hidden="true">⏳</div>
-      <div class="navcard__text">
-        <div class="navcard__title">Wait</div>
-        <div class="navcard__meta">loader + error</div>
-      </div>
-    </a>
-
-    <a class="navcard" href="table.html" data-testid="nav-table">
-      <div class="navcard__icon" aria-hidden="true">📊</div>
-      <div class="navcard__text">
-        <div class="navcard__title">Tabuľka</div>
-        <div class="navcard__meta">sort + filter</div>
+        <div class="navcard__title">Príbeh</div>
+        <div class="navcard__meta">budget + pick</div>
       </div>
     </a>
   </nav>
 </header>
 
-<!-- CONTENT -->
-<main class="mbk-page">
-  <section class="mbk-panel" data-testid="page-dragon">
+<!-- PAGE -->
+<main class="mbk-page" data-testid="page-dragon">
+  <h1 style="margin: 10px 0 8px;" data-testid="page-title">Draci</h1>
+  <p style="margin: 0 0 14px;">
+    Pridávaj drakov do arény (max 77), kliknutím vyber jedného (highlight), vieš odobrať posledného alebo resetovať.
+  </p>
 
-    <div class="mbk-panel__head">
-      <h1 class="mbk-h1" data-testid="page-title">Draci v testovacom poli</h1>
-      <p class="mbk-muted">
-        Testuj: kliky na tlačidlá, DOM zmeny, náhodné pozície, limity (0–77), a reset.
-      </p>
+  <div class="mbk-controls">
+    <button class="mbk-btn mbk-btn--primary" type="button" data-testid="add-dragon">+ Add dragon</button>
+    <button class="mbk-btn" type="button" data-testid="remove-dragon">Remove last</button>
+    <button class="mbk-btn" type="button" data-testid="reset-dragon">Reset</button>
+
+    <div class="mbk-counter" aria-label="Dragon counter">
+      <span class="mbk-counter__label">Count</span>
+      <span class="mbk-counter__value" data-testid="dragon-count">0</span>
+      <span class="mbk-counter__meta">/ 77</span>
     </div>
+  </div>
 
-    <div class="mbk-controls">
-      <button class="mbk-btn mbk-btn--primary" data-testid="add-dragon" type="button">Pridať draka 🐉</button>
-      <button class="mbk-btn" data-testid="remove-dragon" type="button">Odstrániť draka 🧹</button>
-      <button class="mbk-btn mbk-btn--ghost" data-testid="reset-dragon" type="button">Reset</button>
+  <div class="mbk-stage" data-testid="dragon-arena" aria-label="Dragon arena"></div>
 
-      <div class="mbk-counter" data-testid="dragon-counter">
-        <span class="mbk-counter__label">Počet drakov</span>
-        <span class="mbk-counter__value" data-testid="dragon-count">0</span>
-        <span class="mbk-counter__meta">/ 77</span>
-      </div>
-    </div>
+  <div class="mbk-banner" data-testid="dragon-banner" hidden>
+    Limit 77 je dosiahnutý – viac drakov sa nedá pridať.
+  </div>
 
-    <div class="mbk-stage" data-testid="dragon-arena" aria-label="Plocha s drakmi"></div>
-
-    <div class="mbk-banner" data-testid="dragon-banner" hidden>
-      Dosiahla si limit 77 drakov. Ďalší sa už nepridá.
-    </div>
-
-    <div class="mbk-hint" data-testid="dragon-hint">
-      Playwright tip: asserty na <b>dragon-count</b>, počet prvkov <b>[data-testid="dragon"]</b>,
-      a že “remove” odstráni posledný pridaný element.
-    </div>
-
-  </section>
+  <div class="mbk-hint" data-testid="dragon-hint">
+    Tip: klikni na draka – iba jeden môže byť vybraný naraz.
+  </div>
 </main>
 
-<!-- FOOTER: rovnaký ako index -->
+<!-- FOOTER -->
 <footer class="mbk-footer" data-testid="footer">
   <div class="mbk-footer__inner">
     <div>© MythBusters Kingdom</div>
     <div class="mbk-footer__links">
       <a href="index.html" data-testid="footer-home">Home</a>
-      <a href="table.html" data-testid="footer-myths">Myths</a>
-      <a href="wait.html" data-testid="footer-status">Status</a>
+      <a href="dragon.html" data-testid="footer-dragon">Dragon</a>
+      <a href="library.html" data-testid="footer-library">Library</a>
+      <a href="story.html" data-testid="footer-story">Story</a>
     </div>
   </div>
 </footer>
 
-<!-- Toast (ak ho používaš) -->
+<!-- Global toast (shared across pages) -->
 <div class="toast" data-testid="toast" hidden>
-  <div>
-    <b data-testid="toast-title">Toast</b>
-    <p data-testid="toast-msg">Správa</p>
-  </div>
-  <button class="btn" data-testid="toast-close">OK</button>
+  <strong data-testid="toast-title"></strong>
+  <p data-testid="toast-msg"></p>
+  <button class="mbk-btn mbk-btn--ghost" type="button" data-testid="toast-close">Close</button>
 </div>
 
 <script src="app.js"></script>

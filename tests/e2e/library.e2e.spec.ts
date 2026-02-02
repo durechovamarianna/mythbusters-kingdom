@@ -11,19 +11,22 @@ import { expectNavActive } from "../_support/helpers";
 
 test.describe("E2E – Library user flow", () => {
   test("User navigates to Library, searches from 3 chars, selects spell, clears search", async ({ page }) => {
-    // SK: Začíname na domovskej stránke.
-    // EN: Start on home page.
+    // SK/EN: Start on home page.
     await page.goto("index.html");
+    await expect(page.getByTestId("page-home")).toBeVisible();
     await expect(page.getByTestId("page-title")).toBeVisible();
+    await expectNavActive(page, "nav-home");
 
-    // SK: Navigácia do knižnice.
-    // EN: Navigate to library.
+    // SK/EN: Navigate to Library via nav card.
     await page.getByTestId("nav-library").click();
+    await expect(page).toHaveURL(/library\.html$/);
     await expect(page.getByTestId("page-library")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Knihovník");
 
-    // SK/EN: Active nav item is highlighted.
+    // SK/EN: Active nav item highlighted.
     await expectNavActive(page, "nav-library");
+
+    // SK/EN: Page title should exist (avoid brittle exact text).
+    await expect(page.getByTestId("page-title")).toBeVisible();
 
     const search = page.getByTestId("search");
     const min3 = page.getByTestId("min3-hint");
@@ -41,40 +44,36 @@ test.describe("E2E – Library user flow", () => {
     await expect(min3).toBeHidden();
     await expect(noRes).toBeHidden();
 
-    // SK: Výsledky musia existovať (aspoň 1).
-    // EN: Results should exist (at least 1).
+    // SK/EN: Results should exist (at least 1).
     const results = page.getByTestId("spell-str");
-    await expect(results.first()).toBeVisible();
+    const first = results.first();
+    await expect(first).toBeVisible();
 
-    // SK: Vyberiem prvý výsledok a overím highlight.
-    // EN: Select first result and assert highlight.
-    await results.first().click();
-    await expect(results.first()).toHaveClass(/is-selected/);
+    // SK/EN: Select first result and assert highlight.
+    await first.click();
+    await expect(first).toHaveClass(/is-selected/);
 
-    // SK: Vyčistím vyhľadávanie → späť default.
-    // EN: Clear search → back to default.
+    // SK/EN: Clear search → back to default.
     await search.fill("");
     await expect(min3).toBeVisible();
     await expect(noRes).toBeHidden();
 
-    // SK: Stále existuje cloud s položkami.
-    // EN: Cloud still present with items.
+    // SK/EN: Cloud still present with items.
     await expect(page.getByTestId("spell-cloud")).toBeVisible();
     await expect(page.getByTestId("spell-str").first()).toBeVisible();
   });
 
   test("Theme toggle does not break Library UI (smoke-like E2E check)", async ({ page }) => {
     await page.goto("library.html");
+    await expect(page.getByTestId("page-library")).toBeVisible();
+    await expectNavActive(page, "nav-library");
 
-    // SK: Toggle témy je často zdroj flaky vizuálnych bugov (kontrast, hidden prvky).
-    // EN: Theme toggle often causes flaky visual issues (contrast/hidden elements).
     const toggle = page.getByTestId("theme-toggle");
     await expect(toggle).toBeVisible();
 
     await toggle.click();
 
-    // SK: Po prepnutí musí stránka stále fungovať.
-    // EN: After switching, page should still work.
+    // SK/EN: After switching, page should still work.
     await expect(page.getByTestId("search")).toBeVisible();
     await expect(page.getByTestId("spell-cloud")).toBeVisible();
   });

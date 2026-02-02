@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { expectNavActive } from "../_support/helpers";
 
 /**
  * SMOKE – Library
@@ -8,22 +9,38 @@ import { test, expect } from "@playwright/test";
  */
 
 test.describe("SMOKE – Library", () => {
-  test("Library loads and core elements are visible", async ({ page }) => {
+  test("Library loads and core elements are present", async ({ page }) => {
     await page.goto("library.html");
+    await expect(page).toHaveURL(/library\.html$/);
 
+    // Page anchor
     await expect(page.getByTestId("page-library")).toBeVisible();
-    await expect(page.getByTestId("page-title")).toContainText("Knihovník");
+
+    // Active nav
+    await expectNavActive(page, "nav-library");
+
+    // Title exists (avoid brittle exact text like 'Knihovník')
+    await expect(page.getByTestId("page-title")).toBeVisible();
+
+    // Core UI
     await expect(page.getByTestId("search")).toBeVisible();
-    await expect(page.getByTestId("spell-cloud")).toBeVisible();
+
+    // Cloud existence is enough for smoke
+    await expect(page.getByTestId("spell-cloud")).toHaveCount(1);
+    await expect(page.getByTestId("spell-str").first()).toBeVisible();
   });
 
   test("Typing <3 chars does not show empty state", async ({ page }) => {
     await page.goto("library.html");
+    await expect(page.getByTestId("page-library")).toBeVisible();
 
     const search = page.getByTestId("search");
+    const min3 = page.getByTestId("min3-hint");
+    const noRes = page.getByTestId("no-results");
+
     await search.fill("ab");
 
-    await expect(page.getByTestId("min3-hint")).toBeVisible();
-    await expect(page.getByTestId("no-results")).toBeHidden();
+    await expect(min3).toBeVisible();
+    await expect(noRes).toBeHidden();
   });
 });

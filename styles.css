@@ -1,12 +1,10 @@
 /* =========================
    MythBusters Kingdom - styles.css
-   Unified styles for:
-   - home
-   - dragon
-   - spells
-   - library
-   - wizard
-   - wait
+   KEEP ONLY:
+   - index.html (home)
+   - dragon.html
+   - library.html
+   - story.html
    ========================= */
 
 /* ---------- CSS variables / theme ---------- */
@@ -73,15 +71,20 @@ html, body{
 }
 
 a{ color: inherit; }
-
 h1,h2,h3{ letter-spacing: .2px; }
 p{ color: var(--mbk-muted); line-height: 1.5; }
 
-/* ---------- Layout container ---------- */
-.mbk-container{
-  max-width: 1100px;
+:focus{ outline: none; }
+:focus-visible{
+  outline: 2px solid var(--mbk-focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Generic page wrapper (dragon/library/story) ---------- */
+.mbk-page{
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 14px;
+  padding: 18px 14px 28px;
 }
 
 /* ---------- TOP (sticky header) ---------- */
@@ -143,19 +146,24 @@ p{ color: var(--mbk-muted); line-height: 1.5; }
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
+
 .mbk-btn:hover{
   transform: translateY(-1px);
   background: var(--mbk-card2);
   border-color: rgba(124,92,255,.35);
 }
+
 .mbk-btn:disabled{
   opacity: .55;
   cursor: not-allowed;
   transform: none;
 }
+
 .mbk-btn--ghost{ background: transparent; }
+
 .mbk-btn--primary{
   background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(0,255,209,.55));
   border-color: rgba(124,92,255,.55);
@@ -180,7 +188,6 @@ p{ color: var(--mbk-muted); line-height: 1.5; }
   background: rgba(255,255,255,.18);
   border-radius: 999px;
 }
-
 :root[data-theme="light"] .mbk-navcards::-webkit-scrollbar-thumb{
   background: rgba(0,0,0,.18);
 }
@@ -218,30 +225,6 @@ p{ color: var(--mbk-muted); line-height: 1.5; }
 .navcard__title{ font-weight: 900; line-height: 1.05; }
 .navcard__meta{ color: var(--mbk-muted); font-size: 12px; margin-top: 2px; }
 
-/* ---------- Shared page shell ---------- */
-.mbk-page{
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 22px 14px 28px;
-}
-
-.mbk-panel{
-  background: var(--mbk-card);
-  border: 1px solid var(--mbk-border);
-  border-radius: var(--mbk-radius-xl);
-  padding: 18px;
-  box-shadow: var(--mbk-shadow);
-}
-
-.mbk-panel__head{ margin-bottom: 12px; }
-
-.mbk-h1{
-  margin: 0 0 6px;
-  font-size: clamp(24px, 3vw, 34px);
-}
-
-.mbk-muted{ color: var(--mbk-muted); margin: 0; }
-
 /* ---------- Footer ---------- */
 .mbk-footer{
   border-top: 1px solid var(--mbk-border);
@@ -268,135 +251,7 @@ p{ color: var(--mbk-muted); line-height: 1.5; }
 }
 .mbk-footer a:hover{ color: var(--mbk-text); }
 
-/* ---------- Universal components (used by spells/library/wizard/wait) ---------- */
-.container{
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 16px 14px;
-}
-
-.shell{
-  margin-top: 14px;
-  border-radius: var(--mbk-radius-xl);
-  padding: 16px;
-  background: var(--mbk-card);
-  border: 1px solid var(--mbk-border);
-  box-shadow: var(--mbk-shadow);
-}
-
-.page{ padding-top: 6px; }
-
-.grid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-@media (max-width: 900px){
-  .grid{ grid-template-columns: 1fr; }
-}
-
-.card{
-  border-radius: var(--mbk-radius-xl);
-  padding: 16px;
-  border: 1px solid var(--mbk-border);
-  background: rgba(255,255,255,.04);
-}
-
-.card h3{ margin: 0 0 8px; }
-
-.row{
-  display: flex;
-  gap: 12px;
-  align-items: end;
-  flex-wrap: wrap;
-}
-
-.form label{
-  display: block;
-  margin: 10px 0;
-  font-weight: 800;
-}
-
-input, select, textarea{
-  width: 100%;
-  margin-top: 6px;
-  padding: 10px 12px;
-  border-radius: var(--mbk-radius-md);
-  border: 1px solid rgba(255,255,255,.14);
-  background: var(--mbk-input-bg);
-  color: var(--mbk-text);
-  outline: none;
-}
-
-:root[data-theme="light"] input,
-:root[data-theme="light"] select,
-:root[data-theme="light"] textarea{
-  border-color: rgba(0,0,0,.14);
-}
-
-input:focus, select:focus, textarea:focus{
-  border-color: rgba(124,92,255,.55);
-  box-shadow: 0 0 0 6px rgba(124,92,255,.12);
-}
-
-.btn{
-  padding: 10px 14px;
-  border-radius: var(--mbk-radius-md);
-  border: 1px solid var(--mbk-border);
-  background: var(--mbk-card);
-  color: var(--mbk-text);
-  font-weight: 900;
-  cursor: pointer;
-}
-.btn:hover{
-  background: var(--mbk-card2);
-  border-color: rgba(124,92,255,.35);
-}
-.btn.primary{
-  background: linear-gradient(135deg, rgba(124,92,255,.55), rgba(0,255,209,.22));
-  border-color: rgba(124,92,255,.45);
-}
-
-.chip{
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: var(--mbk-radius-pill);
-  border: 1px solid var(--mbk-border);
-  background: rgba(255,255,255,.04);
-  font-size: 12px;
-  font-weight: 900;
-  color: var(--mbk-muted);
-}
-.chip--brand{
-  border-color: rgba(124,92,255,.4);
-  background: rgba(124,92,255,.14);
-  color: var(--mbk-text);
-}
-.chip--ok{
-  border-color: var(--ok-bd);
-  background: var(--ok-bg);
-  color: var(--mbk-text);
-}
-.chip--warn{
-  border-color: var(--warn-bd);
-  background: var(--warn-bg);
-  color: var(--mbk-text);
-}
-
-.banner{
-  border-radius: var(--mbk-radius-lg);
-  padding: 12px 14px;
-  margin: 10px 0;
-  border: 1px solid var(--mbk-border);
-  background: rgba(255,255,255,.04);
-  font-weight: 900;
-}
-.banner.ok{ background: var(--ok-bg); border-color: var(--ok-bd); }
-.banner.bad{ background: var(--bad-bg); border-color: var(--bad-bd); }
-.banner.warn{ background: var(--warn-bg); border-color: var(--warn-bd); }
-
-/* ---------- HOME HERO ---------- */
+/* ---------- HOME HERO (index.html) ---------- */
 .mbk-hero{
   min-height: calc(100vh - 170px);
   position: relative;
@@ -428,7 +283,6 @@ input:focus, select:focus, textarea:focus{
   opacity: .22;
   pointer-events: none;
 }
-
 :root[data-theme="light"] .mbk-hero__overlay{ opacity: .14; }
 
 .mbk-hero__content{
@@ -483,7 +337,7 @@ input:focus, select:focus, textarea:focus{
 }
 .mbk-mini{ margin-top: 16px; color: var(--mbk-muted); font-size: 13px; }
 
-/* ---------- Dragon helpers ---------- */
+/* ---------- Dragon (dragon.html) ---------- */
 .mbk-controls{
   display: flex;
   flex-wrap: wrap;
@@ -505,7 +359,6 @@ input:focus, select:focus, textarea:focus{
 .mbk-counter__label{ color: var(--mbk-muted); font-weight: 900; }
 .mbk-counter__value{ font-size: 28px; font-weight: 1000; }
 .mbk-counter__meta{ color: rgba(255,255,255,.60); font-weight: 900; }
-
 :root[data-theme="light"] .mbk-counter__meta{ color: rgba(0,0,0,.55); }
 
 .mbk-stage{
@@ -554,7 +407,7 @@ input:focus, select:focus, textarea:focus{
 
 .mbk-hint{ margin-top: 12px; color: var(--mbk-muted); font-size: 13px; }
 
-/* ---------- Toast ---------- */
+/* ---------- Global Toast (used by app.js) ---------- */
 .toast{
   position: fixed;
   right: 16px;
@@ -571,56 +424,24 @@ input:focus, select:focus, textarea:focus{
   background: rgba(255,255,255,.92);
   border-color: rgba(0,0,0,.12);
 }
-.toast [data-testid="toast-title"]{ display:block; margin-bottom: 4px; }
+.toast [data-testid="toast-title"]{ display:block; margin-bottom: 4px; font-weight: 1000; }
 .toast [data-testid="toast-msg"]{ margin: 0; color: var(--mbk-muted); }
-.toast .btn{ margin-top: 8px; width: 100%; }
+.toast [data-testid="toast-close"]{ margin-top: 8px; width: 100%; }
 
-/* ---------- Spelleology (library) helpers (keep your cloud look) ---------- */
-.spell-str{
-  display:inline-block;
-  border: none;
-  background: transparent;
-  color: rgba(255,255,255,.86);
-  line-height: 1.2;
-  max-width: 100%;
-  word-break: break-word;
-}
-:root[data-theme="light"] .spell-str{ color: rgba(0,0,0,.80); }
-
-.spell-str[data-size="s"]{ font-size: 14px; opacity: .78; }
-.spell-str[data-size="m"]{ font-size: 18px; opacity: .86; font-weight: 800; }
-.spell-str[data-size="l"]{ font-size: 26px; opacity: .92; font-weight: 1000; }
-
-@media (max-width: 820px){
-  .spell-str[data-size="l"]{ font-size: 22px; }
-}
-
-/* ---------- Mobile ---------- */
-@media (max-width: 640px){
-  .mbk-top__inner{ flex-direction: column; align-items: flex-start; }
-  .mbk-footer__inner{ flex-direction: column; align-items: flex-start; }
-  .mbk-hero__content{ padding: 18px; }
-}
-
-/* =========================
-   LIBRARY – Spelleology cloud
-   ========================= */
-
+/* ---------- Library (library.html) Spelleology cloud ---------- */
 .mbk-page--library{
   max-width: 1200px;
   margin: 0 auto;
   padding: 18px 14px 28px;
 }
 
-/* Hero */
 .spelleology-hero{
   position: relative;
   border-radius: 22px;
   overflow: hidden;
   padding: 18px 16px 18px;
   border: 1px solid rgba(255,255,255,.10);
-  background:
-    linear-gradient(180deg, rgba(140, 34, 34, .95), rgba(120, 28, 28, .95));
+  background: linear-gradient(180deg, rgba(140, 34, 34, .95), rgba(120, 28, 28, .95));
   box-shadow: 0 18px 55px rgba(0,0,0,.45);
   margin-bottom: 14px;
 }
@@ -686,7 +507,6 @@ input:focus, select:focus, textarea:focus{
   font-size: 13px;
 }
 
-/* Board */
 .spelleology-board{
   margin-top: 14px;
   border-radius: 22px;
@@ -707,7 +527,6 @@ input:focus, select:focus, textarea:focus{
   margin-bottom: 12px;
 }
 
-/* Cloud text */
 .spelleology-cloud{
   display:flex;
   flex-wrap: wrap;
@@ -715,7 +534,7 @@ input:focus, select:focus, textarea:focus{
   align-items: baseline;
 }
 
-/* “words” */
+/* spell word token */
 .spell-str{
   display:inline-block;
   padding: 0;
@@ -730,7 +549,6 @@ input:focus, select:focus, textarea:focus{
   user-select: none;
   transition: transform .10s ease, color .10s ease, text-shadow .10s ease;
 }
-
 .spell-str:hover{
   transform: translateY(-1px);
   color: rgba(255,240,230,.98);
@@ -755,5 +573,300 @@ input:focus, select:focus, textarea:focus{
   .spell-str[data-size="l"]{ font-size: 22px; }
 }
 
+/* ---------- Mobile tweaks ---------- */
+@media (max-width: 640px){
+  .mbk-top__inner{ flex-direction: column; align-items: flex-start; }
+  .mbk-footer__inner{ flex-direction: column; align-items: flex-start; }
+  .mbk-hero__content{ padding: 18px; }
+}
 
+/* ---------- Story (story.html) ---------- */
+.mbk-page--story{
+  padding-top: 18px;
+}
 
+.story-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 14px;
+  margin: 12px 0 14px;
+  flex-wrap: wrap;
+}
+
+.story-head__title{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: min(680px, 100%);
+}
+
+.story-badge{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display:grid;
+  place-items:center;
+  background: linear-gradient(135deg, rgba(124,92,255,.22), rgba(0,255,209,.12));
+  border: 1px solid var(--mbk-border);
+  box-shadow: 0 10px 26px rgba(0,0,0,.25);
+  flex: 0 0 auto;
+}
+
+.story-h1{
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.15;
+  letter-spacing: .2px;
+}
+
+.story-subtitle{
+  margin: 6px 0 0;
+  color: var(--mbk-muted);
+  font-size: 13px;
+}
+
+.story-toolbar{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.story-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 6px 10px;
+  border-radius: var(--mbk-radius-pill);
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: var(--mbk-muted);
+  font-size: 12px;
+  user-select:none;
+}
+
+:root[data-theme="light"] .story-pill{
+  border-color: rgba(0,0,0,.12);
+  background: rgba(0,0,0,.04);
+}
+
+.story-grid{
+  display:grid;
+  grid-template-columns: 1.1fr 2fr;
+  gap: 14px;
+  align-items:start;
+}
+
+@media (max-width: 980px){
+  .story-grid{ grid-template-columns: 1fr; }
+  .story-head__title{ min-width: 100%; }
+}
+
+.story-panel{
+  background: var(--mbk-card);
+  border: 1px solid var(--mbk-border);
+  border-radius: var(--mbk-radius-xl);
+  box-shadow: var(--mbk-shadow);
+  overflow:hidden;
+}
+
+.story-panel__hd{
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+:root[data-theme="light"] .story-panel__hd{
+  border-bottom-color: rgba(0,0,0,.08);
+}
+
+.story-panel__hd h2{
+  margin:0;
+  font-size: 13px;
+  color: var(--mbk-muted);
+  font-weight: 900;
+  letter-spacing: .2px;
+  text-transform: uppercase;
+}
+
+.story-panel__bd{ padding: 14px; }
+
+.story-budget-row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom: 10px;
+}
+
+.story-budget-value{
+  font-size: 40px;
+  font-weight: 1000;
+  letter-spacing: .5px;
+}
+
+.story-budget-max{
+  color: var(--mbk-muted);
+  font-size: 14px;
+}
+
+.story-meter{
+  height: 10px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 999px;
+  overflow:hidden;
+}
+
+:root[data-theme="light"] .story-meter{
+  background: rgba(0,0,0,.06);
+  border-color: rgba(0,0,0,.10);
+}
+
+.story-meter > div{
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(124,92,255,.95), rgba(0,255,209,.75));
+  transition: width .18s ease;
+}
+
+.story-list{
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.story-hint{
+  margin-top: 8px;
+  color: var(--mbk-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.story-picked{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.story-tag{
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  padding: 6px 10px;
+  border-radius: var(--mbk-radius-pill);
+  background: rgba(0,255,209,.12);
+  border: 1px solid rgba(0,255,209,.22);
+  color: rgba(255,255,255,.92);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+:root[data-theme="light"] .story-tag{
+  color: rgba(0,0,0,.86);
+}
+
+.story-cards{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 980px){
+  .story-cards{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px){
+  .story-cards{ grid-template-columns: 1fr; }
+}
+
+.story-card{
+  appearance: none;
+  border: 1px solid var(--mbk-border);
+  background: var(--mbk-card);
+  color: inherit;
+
+  border-radius: var(--mbk-radius-lg);
+  padding: 14px;
+  cursor:pointer;
+  user-select:none;
+  transition: transform .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
+  display:flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: 92px;
+  position: relative;
+  text-align:left;
+}
+
+.story-card:hover{
+  transform: translateY(-1px);
+  background: var(--mbk-card2);
+  border-color: rgba(124,92,255,.35);
+}
+
+.story-icon{
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  display:grid;
+  place-items:center;
+  flex: 0 0 auto;
+}
+
+.story-meta{ min-width: 0; flex: 1; }
+
+.story-name{
+  font-weight: 1000;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.1;
+  color: var(--mbk-text);
+}
+
+.story-desc{
+  margin: 6px 0 0;
+  color: var(--mbk-muted);
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+.story-cost{
+  position:absolute;
+  top: 12px;
+  right: 12px;
+  font-weight: 1000;
+  background: rgba(124,92,255,.16);
+  border: 1px solid rgba(124,92,255,.28);
+  padding: 6px 10px;
+  border-radius: var(--mbk-radius-pill);
+  font-size: 12px;
+}
+
+.story-card.is-selected{
+  border-color: rgba(0,255,209,.55);
+  background: rgba(0,255,209,.08);
+  cursor: not-allowed;
+}
+.story-card.is-selected .story-cost{
+  background: rgba(0,255,209,.14);
+  border-color: rgba(0,255,209,.28);
+}
+
+.story-card.is-disabled{
+  opacity: .55;
+  cursor: not-allowed;
+}
+.story-card.is-disabled:hover{
+  transform:none;
+  background: var(--mbk-card);
+  border-color: var(--mbk-border);
+}

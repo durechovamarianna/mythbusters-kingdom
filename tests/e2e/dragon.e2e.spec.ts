@@ -27,11 +27,15 @@ test.describe("E2E - Dragon flows", () => {
     await expectNavActive(page, "nav-home");
 
     // SK: CTA preklik na drakov / EN: CTA to Dragon page
-    await page.getByTestId("cta-start").click();
+    // CHANGED: cta-start -> cta-dragon (after index.html cleanup)
+    await page.getByTestId("cta-dragon").click();
     await expect(page).toHaveURL(/dragon\.html$/);
 
     await expect(page.getByTestId("page-dragon")).toBeVisible();
+
+    // NOTE: keep this only if your dragon page title contains "Draci"
     await expect(page.getByTestId("page-title")).toContainText("Draci");
+
     await expectNavActive(page, "nav-dragon");
 
     const add = page.getByTestId("add-dragon");
@@ -50,7 +54,7 @@ test.describe("E2E - Dragon flows", () => {
     await expect(page.getByTestId("dragon")).toHaveCount(2);
 
     // SK: vyberieme 1. draka a skontrolujeme highlight / EN: select 1st dragon (highlight)
-    const first = page.locator('[data-testid="dragon"]').first();
+    const first = page.getByTestId("dragon").first();
     await first.click();
     await expect(first).toHaveClass(/is-selected/);
     await expect(page.locator('[data-testid="dragon"].is-selected')).toHaveCount(1);
