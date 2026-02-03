@@ -5,11 +5,18 @@ const LOCAL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
   testDir: "./tests",
-  retries: 1,
+
+  // SK: bezpečnosť v CI – ak omylom necháš test.only, CI spadne.
+  // EN: safety in CI – prevents accidental test.only merges.
+  forbidOnly: !!process.env.CI,
+
+  retries: process.env.CI ? 1 : 1,
   fullyParallel: false,
   workers: 1,
 
-  // ✅ defaultne testujeme lokálne
+  timeout: 30_000,
+  expect: { timeout: 5_000 },
+
   use: {
     baseURL: process.env.PW_BASE_URL || LOCAL,
     trace: "on-first-retry",
@@ -17,7 +24,6 @@ export default defineConfig({
     video: "retain-on-failure",
   },
 
-  // ✅ Playwright spustí statický server pred testami
   webServer: {
     command: `npx http-server . -p ${PORT} -c-1`,
     url: LOCAL,
@@ -25,7 +31,11 @@ export default defineConfig({
     timeout: 60_000,
   },
 
-  reporter: [["html", { open: "never" }]],
+  // SK: HTML report nech sa negeneruje ako popup, v CI je aj tak v artifacts.
+  // EN: HTML report without auto-open; in CI you can download artifacts.
+  reporter: process.env.CI
+    ? [["github"], ["html", { open: "never" }]]
+    : [["html", { open: "never" }]],
 
   projects: [
     { name: "smoke", testMatch: /.*\.smoke\.spec\.ts/ },

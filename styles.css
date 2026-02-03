@@ -870,3 +870,63 @@ p{ color: var(--mbk-muted); line-height: 1.5; }
   background: var(--mbk-card);
   border-color: var(--mbk-border);
 }
+
+/* --- CONTRAST FIX (only for forms.html) --- */
+.page-wrap,
+.page-wrap * {
+  color: #1f2937; /* tmavosivá, čitateľná */
+}
+
+.hero h1,
+.card h2 {
+  color: #111827; /* ešte tmavšie nadpisy */
+  text-shadow: none;
+}
+
+.hint {
+  color: #374151;
+  opacity: 1; /* zruší vyblednutie */
+}
+
+label {
+  color: #111827;
+}
+
+.req {
+  color: #b91c1c; /* výraznejšia červená pre povinné */
+}
+
+/* viac kontrastu v kartách */
+.hero,
+.card {
+  background: rgba(255, 255, 255, 0.92); /* menej priehľadné */
+}
+
+/* aby boli inputy aj text okolo nich čitateľné */
+input, select, textarea {
+  color: #111827;
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.22);
+}
+
+input::placeholder, textarea::placeholder {
+  color: #6b7280; /* placeholder viditeľný */
+  opacity: 1;
+}
+
+.chip {
+  color: #111827;
+  background: rgba(255, 140, 0, 0.18);
+  border-color: rgba(255, 140, 0, 0.5);
+}
+
+/* DnD boxy výraznejšie */
+.dnd-box {
+  background: rgba(255,255,255,0.9);
+  border-color: rgba(0,0,0,0.25);
+}
+
+.dnd-item {
+  color: #111827;
+}
+

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rozprávkové formuláre</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      background: radial-gradient(circle at top, #ffe8a3 0%, #ffcf6a 40%, #ffb85c 100%);
+    }
+    .page-wrap { max-width: 1050px; margin: 0 auto; padding: 24px; }
+    .hero {
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 16px;
+      padding: 16px 18px;
+      backdrop-filter: blur(4px);
+      margin-bottom: 16px;
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: rgba(255,255,255,0.75);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 16px;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+    }
+
+    .row { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 12px; }
+    label { font-weight: 700; }
+    .hint { font-size: 12px; opacity: 0.75; }
+    .req { color: #c0392b; font-weight: 900; margin-left: 6px; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.15);
+      background: white;
+      font-size: 14px;
+    }
+    input:focus, select:focus, textarea:focus { outline: 2px solid rgba(255,140,0,0.35); }
+
+    /* ✅ VALIDATION: zvýraznenie polí */
+    .is-invalid {
+      border-color: rgba(231,76,60,0.7) !important;
+      background: rgba(231,76,60,0.08) !important;
+      outline: none !important;
+    }
+    .field-error {
+      font-size: 12px;
+      color: #c0392b;
+      margin-top: 2px;
+      display: none;
+    }
+    .field-error.show { display: block; }
+
+    .inline {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,165,0,0.18);
+      border: 1px solid rgba(255,165,0,0.35);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .dnd {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .dnd-box {
+      border: 2px dashed rgba(0,0,0,0.25);
+      border-radius: 14px;
+      padding: 10px;
+      min-height: 140px;
+      background: rgba(255,255,255,0.6);
+    }
+    .dnd-item {
+      background: white;
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 12px;
+      padding: 10px;
+      margin: 8px 0;
+      cursor: grab;
+      user-select: none;
+    }
+    /* ✅ klikom vyberiem viac prísad */
+    .dnd-item.is-selected {
+      border-color: rgba(255,140,0,0.9);
+      box-shadow: 0 0 0 2px rgba(255,140,0,0.25) inset;
+    }
+
+    .dnd-box.over {
+      border-color: rgba(255,140,0,0.8);
+      background: rgba(255,255,255,0.85);
+    }
+
+    .cauldron-list {
+      margin-top: 8px;
+      display: grid;
+      gap: 6px;
+    }
+    .cauldron-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-radius: 999px;
+      padding: 8px 10px;
+      background: rgba(255,165,0,0.14);
+      border: 1px solid rgba(255,165,0,0.35);
+      font-size: 13px;
+    }
+    .pill-x {
+      border: 0;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 2px 8px;
+      background: rgba(0,0,0,0.08);
+      font-weight: 900;
+    }
+
+    .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
+    button { border: 0; border-radius: 12px; padding: 10px 14px; cursor: pointer; font-weight: 800; }
+    .btn-save { background: #ff8c00; color: white; }
+    .btn-clear { background: rgba(0,0,0,0.08); }
+
+    .error {
+      background: rgba(231,76,60,0.12);
+      border: 1px solid rgba(231,76,60,0.25);
+      padding: 10px;
+      border-radius: 12px;
+      margin-top: 10px;
+    }
+
+    .saved-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .saved-item {
+      background: rgba(255,255,255,0.85);
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .saved-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 6px; }
+    .btn-delete { background: rgba(231,76,60,0.15); color: #c0392b; }
+    .kv { display: grid; grid-template-columns: 220px 1fr; gap: 8px; font-size: 14px; }
+    .kv div:nth-child(odd) { font-weight: 800; opacity: 0.9; }
+  </style>
+</head>
+
+<body>
+  <main class="page-wrap" data-testid="page-forms">
+    <div class="hero">
+      <h1 data-testid="page-title">Rozprávkové formuláre</h1>
+      <p class="hint">
+        Stránka na testovanie: dropdown, drag & drop, validácie, povinné/nepovinné polia, placeholdery, PSČ → mesto.
+      </p>
+      <p class="hint">
+        Navigácia: <a href="index.html">Domov</a> • <a href="library.html">Knižnica</a> • <a href="dragon.html">Draci</a> • <a href="story.html">Príbeh</a>
+      </p>
+    </div>
+
+    <section class="grid">
+      <form class="card" data-testid="form-card" novalidate>
+        <h2>Formulár</h2>
+
+        <div class="row">
+          <label for="fullName">Meno hrdinu <span class="req">*</span></label>
+          <input id="fullName" data-testid="input-fullname" type="text"
+                 placeholder="napr. Ján-Šimon O'Connor" autocomplete="name" />
+          <div class="hint">Povolené: písmená, medzery, pomlčky, apostrof.</div>
+          <div class="field-error" data-testid="err-fullname"></div>
+        </div>
+
+        <div class="row">
+          <label for="company">Názov cechu / firmy</label>
+          <input id="company" data-testid="input-company" type="text" placeholder="napr. Zlatý Grif s.r.o." />
+          <div class="field-error" data-testid="err-company"></div>
+        </div>
+
+        <div class="row">
+          <label for="age">Vek <span class="req">*</span></label>
+          <input id="age" data-testid="input-age" type="number" min="1" max="120" placeholder="napr. 27" />
+          <div class="field-error" data-testid="err-age"></div>
+        </div>
+
+        <div class="row">
+          <label for="food">Obľúbené jedlo <span class="req">*</span></label>
+          <input id="food" data-testid="input-food" type="text" placeholder="napr. bryndzové halušky" />
+          <div class="hint">Len text (bez čísiel).</div>
+          <div class="field-error" data-testid="err-food"></div>
+        </div>
+
+        <div class="row">
+          <label for="kingdom">Kráľovstvo <span class="req">*</span></label>
+          <select id="kingdom" data-testid="select-kingdom">
+            <option value="">— vyber —</option>
+            <option value="embervale">Embervale</option>
+            <option value="suncrest">Suncrest</option>
+            <option value="mistwood">Mistwood</option>
+          </select>
+          <div class="field-error" data-testid="err-kingdom"></div>
+        </div>
+
+        <div class="row">
+          <label for="zip">PSČ <span class="req">*</span></label>
+          <div class="inline">
+            <input id="zip" data-testid="input-zip" type="text" inputmode="numeric"
+                   placeholder="napr. 02354" maxlength="5" />
+            <span class="chip" data-testid="zip-city">Mesto: —</span>
+          </div>
+          <div class="hint">Zadaj 5 číslic – zobrazí sa mesto/obec (napr. 02354 → Turzovka).</div>
+          <div class="field-error" data-testid="err-zip"></div>
+        </div>
+
+        <div class="row">
+          <label for="email">E-mail <span class="req">*</span></label>
+          <input id="email" data-testid="input-email" type="email" placeholder="napr. hero@kingdom.sk" autocomplete="email" />
+          <div class="field-error" data-testid="err-email"></div>
+        </div>
+
+        <div class="row">
+          <label for="phone">Telefón (medzinárodný) <span class="req">*</span></label>
+          <input id="phone" data-testid="input-phone" type="tel" placeholder="+421901123456" />
+          <div class="hint">Formát: +<kód krajiny><číslo>, napr. +421...</div>
+          <div class="field-error" data-testid="err-phone"></div>
+        </div>
+
+        <div class="row">
+          <label>Magické prísady (drag & drop)</label>
+          <div class="hint">Klikom môžeš vybrať viac prísad. Potom ich pretiahni do kotlíka.</div>
+
+          <div class="dnd">
+            <div class="dnd-box" data-testid="dnd-source">
+              <strong>Polička</strong>
+              <div class="dnd-item" draggable="true" data-testid="dnd-item" data-item="unicorn-hair">Vlások jednorožca</div>
+              <div class="dnd-item" draggable="true" data-testid="dnd-item" data-item="dragon-scale">Dračia šupina</div>
+              <div class="dnd-item" draggable="true" data-testid="dnd-item" data-item="moon-dust">Mesačný prach</div>
+            </div>
+
+            <div class="dnd-box" data-testid="dnd-target">
+              <strong>Kotlík</strong>
+              <div class="hint" data-testid="dnd-count">0 prísad v kotlíku</div>
+              <div class="cauldron-list" data-testid="dnd-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn-clear" data-testid="btn-reset">Vyčistiť</button>
+          <button type="button" class="btn-save" data-testid="btn-save">Uložiť</button>
+        </div>
+
+        <div class="error" data-testid="form-error" style="display:none;"></div>
+      </form>
+
+      <aside class="card" data-testid="saved-card">
+        <h2>Uložené záznamy</h2>
+        <div class="hint">Po kliknutí na Uložiť sa tu zobrazí karta. Každú kartu vieš vymazať.</div>
+        <div class="saved-grid" data-testid="saved-list"></div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
