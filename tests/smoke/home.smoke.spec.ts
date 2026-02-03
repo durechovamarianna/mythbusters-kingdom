@@ -55,6 +55,6 @@ test.describe("SMOKE - Home", () => {
     await expectNavActive(page, "nav-dragon");
 
     // Less brittle than exact "Draci"
-    await expect(page.getByTestId("page-title")).toHaveText(/drak/i);
+    await expect(page.getByTestId("page-title")).toHaveText(/drak|drac/i);
   });
 });
