@@ -63,8 +63,10 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    // ✅ Make nav link active based on current file (tests expect /is-active/)
     const file = (location.pathname.split("/").pop() || "index.html").toLowerCase();
-    document.querySelectorAll(".mbk-navcards a").forEach((a) => {
+
+    document.querySelectorAll("a[data-testid^='nav-'], .mbk-navcards a").forEach((a) => {
       const href = (a.getAttribute("href") || "").toLowerCase();
       a.classList.remove("is-active");
       if (href === file) a.classList.add("is-active");
@@ -298,41 +300,42 @@ document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('[data-testid="page-forms"]');
     if (!root) return;
 
-    const fullName = root.querySelector('[data-testid="input-fullname"]');
-    const company = root.querySelector('[data-testid="input-company"]');
-    const age = root.querySelector('[data-testid="input-age"]');
-    const food = root.querySelector('[data-testid="input-food"]');
-    const kingdom = root.querySelector('[data-testid="select-kingdom"]');
-    const zip = root.querySelector('[data-testid="input-zip"]');
-    const zipCity = root.querySelector('[data-testid="zip-city"]');
-    const email = root.querySelector('[data-testid="input-email"]');
-    const phone = root.querySelector('[data-testid="input-phone"]');
+    // Inputs (all by data-testid)
+    const fullName = qs("input-fullname");
+    const company = qs("input-company");
+    const age = qs("input-age");
+    const food = qs("input-food");
+    const kingdom = qs("select-kingdom");
+    const zip = qs("input-zip");
+    const zipCity = qs("zip-city");
+    const email = qs("input-email");
+    const phone = qs("input-phone");
 
-    const errFullName = root.querySelector('[data-testid="err-fullname"]');
-    const errCompany = root.querySelector('[data-testid="err-company"]');
-    const errAge = root.querySelector('[data-testid="err-age"]');
-    const errFood = root.querySelector('[data-testid="err-food"]');
-    const errKingdom = root.querySelector('[data-testid="err-kingdom"]');
-    const errZip = root.querySelector('[data-testid="err-zip"]');
-    const errEmail = root.querySelector('[data-testid="err-email"]');
-    const errPhone = root.querySelector('[data-testid="err-phone"]');
+    const btnSave = qs("btn-save");
+    const btnReset = qs("btn-reset");
+    const errorBox = qs("form-error");
+    const savedList = qs("saved-list");
 
-    const btnSave = root.querySelector('[data-testid="btn-save"]');
-    const btnReset = root.querySelector('[data-testid="btn-reset"]');
-    const errorBox = root.querySelector('[data-testid="form-error"]');
+    const errFullName = qs("err-fullname");
+    const errCompany = qs("err-company");
+    const errAge = qs("err-age");
+    const errFood = qs("err-food");
+    const errKingdom = qs("err-kingdom");
+    const errZip = qs("err-zip");
+    const errEmail = qs("err-email");
+    const errPhone = qs("err-phone");
 
-    const savedList = root.querySelector('[data-testid="saved-list"]');
+    const dndSource = qs("dnd-source");
+    const dndTarget = qs("dnd-target");
+    const dndCount = qs("dnd-count");
+    const dndList = qs("dnd-list");
 
-    const dndSource = root.querySelector('[data-testid="dnd-source"]');
-    const dndTarget = root.querySelector('[data-testid="dnd-target"]');
-    const dndCount = root.querySelector('[data-testid="dnd-count"]');
-    const dndList = root.querySelector('[data-testid="dnd-list"]');
+    // Required basics
+    if (!btnSave || !btnReset || !savedList || !errorBox) return;
 
-    if (
-      !fullName || !company || !age || !food || !kingdom || !zip || !zipCity || !email || !phone ||
-      !btnSave || !btnReset || !errorBox || !savedList ||
-      !dndSource || !dndTarget || !dndCount || !dndList
-    ) return;
+    // Ensure buttons are buttons
+    btnSave.setAttribute("type", "button");
+    btnReset.setAttribute("type", "button");
 
     const zipMap = {
       "81101": "Bratislava",
@@ -349,23 +352,25 @@ document.addEventListener("DOMContentLoaded", () => {
       "moon-dust": "Mesačný prach",
     };
 
-    // ---------- helpers (errors + invalid fields) ----------
+    // ---------- global error box ----------
     function showError(msg) {
       errorBox.style.display = "block";
-      errorBox.textContent = msg;
+      errorBox.textContent = msg || "";
     }
     function clearError() {
       errorBox.style.display = "none";
       errorBox.textContent = "";
     }
 
-    function setFieldError(inputEl, errEl, msg) {
+    // ---------- field errors ----------
+    function showFieldError(inputEl, errEl, msg) {
       if (inputEl) inputEl.classList.add("is-invalid");
       if (errEl) {
         errEl.textContent = msg || "";
-        errEl.classList.add("show");
+        errEl.classList.add("show"); // CSS handles visibility
       }
     }
+
     function clearFieldError(inputEl, errEl) {
       if (inputEl) inputEl.classList.remove("is-invalid");
       if (errEl) {
@@ -373,6 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
         errEl.classList.remove("show");
       }
     }
+
     function clearAllFieldErrors() {
       clearFieldError(fullName, errFullName);
       clearFieldError(company, errCompany);
@@ -384,32 +390,37 @@ document.addEventListener("DOMContentLoaded", () => {
       clearFieldError(phone, errPhone);
     }
 
-    // ---------- zip ----------
+    // ---------- ZIP ----------
     function sanitizeZip(value) {
       return (value || "").replace(/\D/g, "").slice(0, 5);
     }
+
     function updateZipCity() {
+      if (!zip || !zipCity) return;
       const z = sanitizeZip(zip.value);
       zip.value = z;
       const city = zipMap[z];
       zipCity.textContent = city ? `Mesto: ${city}` : "Mesto: —";
     }
-    zip.addEventListener("input", () => {
+
+    zip?.addEventListener("input", () => {
       updateZipCity();
-      // live-clear error if fixed
+      // live clear if fixed
       if (/^\d{5}$/.test(zip.value) && zipMap[zip.value]) {
         clearFieldError(zip, errZip);
       }
     });
 
-    // ---------- DnD: multi-select + move ----------
+    // ---------- DnD (multi-select + multi-drop) ----------
     const cauldron = new Set();
 
     function refreshDnDCount() {
+      if (!dndCount) return;
       dndCount.textContent = `${cauldron.size} prísad v kotlíku`;
     }
 
     function renderCauldron() {
+      if (!dndList) return;
       dndList.innerHTML = "";
       Array.from(cauldron).forEach((key) => {
         const pill = document.createElement("div");
@@ -421,10 +432,11 @@ document.addEventListener("DOMContentLoaded", () => {
         label.textContent = ING_LABEL[key] || key;
 
         const x = document.createElement("button");
-        x.className = "pill-x";
         x.type = "button";
+        x.className = "pill-x";
         x.textContent = "×";
-        x.setAttribute("aria-label", "Odstrániť");
+        x.setAttribute("aria-label", "Odstrániť"); // tests use this
+
         x.addEventListener("click", () => {
           cauldron.delete(key);
           refreshDnDCount();
@@ -437,178 +449,177 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    function setOver(state) {
-      if (state) dndTarget.classList.add("over");
-      else dndTarget.classList.remove("over");
-    }
-
-    // klik = vyber (multiselect)
-    dndSource.addEventListener("click", (e) => {
+    // click = multi-select
+    dndSource?.addEventListener("click", (e) => {
       const el = e.target;
-      if (!el || !(el instanceof HTMLElement)) return;
+      if (!(el instanceof HTMLElement)) return;
       const itemEl = el.closest(".dnd-item");
       if (!itemEl) return;
       itemEl.classList.toggle("is-selected");
     });
 
-    // dragstart: ak je vybraté viac, prenesiem všetky vybraté; inak len tú jednu
-    dndSource.addEventListener("dragstart", (e) => {
+    // dragstart: include all selected (or just dragged)
+    dndSource?.addEventListener("dragstart", (e) => {
       const el = e.target;
-      if (!el || !(el instanceof HTMLElement)) return;
+      if (!(el instanceof HTMLElement)) return;
 
       const dragged = el.closest(".dnd-item");
       if (!dragged) return;
 
       const selected = Array.from(dndSource.querySelectorAll(".dnd-item.is-selected"));
-      const list = selected.length
-        ? selected
-        : [dragged];
+      const list = selected.length ? selected : [dragged];
 
       const keys = list.map((n) => n.getAttribute("data-item")).filter(Boolean);
 
-      e.dataTransfer.setData("application/json", JSON.stringify(keys));
-      e.dataTransfer.setData("text/plain", keys[0] || "");
+      // ✅ IMPORTANT for Playwright dragTo: also put JSON array into text/plain
+      const payload = JSON.stringify(keys);
+
+      e.dataTransfer?.setData("application/json", payload);
+      e.dataTransfer?.setData("text/plain", payload);
     });
 
-    dndTarget.addEventListener("dragover", (e) => { e.preventDefault(); setOver(true); });
-    dndTarget.addEventListener("dragleave", () => setOver(false));
+    dndTarget?.addEventListener("dragover", (e) => e.preventDefault());
 
-    dndTarget.addEventListener("drop", (e) => {
+    dndTarget?.addEventListener("drop", (e) => {
       e.preventDefault();
-      setOver(false);
 
       let keys = [];
-      const json = e.dataTransfer.getData("application/json");
-      if (json) {
-        try { keys = JSON.parse(json); } catch { keys = []; }
-      }
-      if (!keys.length) {
-        const single = e.dataTransfer.getData("text/plain");
-        if (single) keys = [single];
+      const json = e.dataTransfer?.getData("application/json");
+      const plain = e.dataTransfer?.getData("text/plain");
+      const raw = json || plain || "";
+
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) keys = parsed;
+          else if (typeof parsed === "string") keys = [parsed];
+        } catch {
+          keys = [raw];
+        }
       }
 
       keys.forEach((k) => cauldron.add(k));
 
-      // po drop: odznač vybraté (aby bolo jasné, že sa to prenieslo)
-      dndSource.querySelectorAll(".dnd-item.is-selected").forEach((n) => n.classList.remove("is-selected"));
+      // clear selection highlight after drop
+      dndSource?.querySelectorAll(".dnd-item.is-selected").forEach((n) => n.classList.remove("is-selected"));
 
       refreshDnDCount();
       renderCauldron();
     });
 
-    // ---------- validation ----------
+    // ---------- Validation ----------
     const namePattern = /^[A-Za-zÀ-ž\s'-]+$/;
     const foodPattern = /^[A-Za-zÀ-ž\s'-]+$/;
     const phonePattern = /^\+\d{8,15}$/;
     const zipPattern = /^\d{5}$/;
-
-    // jednoduchý, ale praktický email regex + zároveň HTML5 checkValidity()
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
     function getValues() {
-      const z = sanitizeZip(zip.value);
+      const z = sanitizeZip(zip?.value || "");
       return {
-        fullName: fullName.value.trim(),
-        company: company.value.trim(),
-        age: age.value.trim(),
-        food: food.value.trim(),
-        kingdom: kingdom.value,
+        fullName: (fullName?.value || "").trim(),
+        company: (company?.value || "").trim(),
+        age: (age?.value || "").trim(),
+        food: (food?.value || "").trim(),
+        kingdom: kingdom?.value || "",
         zip: z,
         city: zipMap[z] || "",
-        email: email.value.trim(),
-        phone: phone.value.trim(),
+        email: (email?.value || "").trim(),
+        phone: (phone?.value || "").replace(/\s+/g, "").trim(),
         ingredients: Array.from(cauldron),
       };
     }
 
     function validateAndMark(v) {
       clearAllFieldErrors();
+      clearError();
+
+      let ok = true;
 
       // fullName
       if (!v.fullName) {
-        setFieldError(fullName, errFullName, "Meno hrdinu je povinné.");
-        return false;
-      }
-      if (!namePattern.test(v.fullName)) {
-        setFieldError(fullName, errFullName, "Meno obsahuje nepovolené znaky.");
-        return false;
+        showFieldError(fullName, errFullName, "Meno hrdinu je povinné.");
+        ok = false;
+      } else if (!namePattern.test(v.fullName)) {
+        showFieldError(fullName, errFullName, "Meno obsahuje nepovolené znaky.");
+        ok = false;
       }
 
       // age
       if (!v.age) {
-        setFieldError(age, errAge, "Vek je povinný.");
-        return false;
-      }
-      const ageNum = Number(v.age);
-      if (!Number.isFinite(ageNum) || ageNum < 1 || ageNum > 120) {
-        setFieldError(age, errAge, "Vek musí byť číslo 1–120.");
-        return false;
+        showFieldError(age, errAge, "Vek je povinný.");
+        ok = false;
+      } else {
+        const ageNum = Number(v.age);
+        if (!Number.isFinite(ageNum) || ageNum < 1 || ageNum > 120) {
+          showFieldError(age, errAge, "Vek musí byť číslo 1–120.");
+          ok = false;
+        }
       }
 
       // food
       if (!v.food) {
-        setFieldError(food, errFood, "Obľúbené jedlo je povinné.");
-        return false;
-      }
-      if (!foodPattern.test(v.food)) {
-        setFieldError(food, errFood, "Jedlo môže obsahovať len písmená (bez čísiel).");
-        return false;
+        showFieldError(food, errFood, "Obľúbené jedlo je povinné.");
+        ok = false;
+      } else if (!foodPattern.test(v.food)) {
+        showFieldError(food, errFood, "Jedlo môže obsahovať len písmená (bez čísiel).");
+        ok = false;
       }
 
       // kingdom
       if (!v.kingdom) {
-        setFieldError(kingdom, errKingdom, "Kráľovstvo je povinné.");
-        return false;
+        showFieldError(kingdom, errKingdom, "Kráľovstvo je povinné.");
+        ok = false;
       }
 
       // zip + city
       if (!zipPattern.test(v.zip)) {
-        setFieldError(zip, errZip, "PSČ musí mať presne 5 číslic.");
-        return false;
-      }
-      if (!v.city) {
-        setFieldError(zip, errZip, "Neznáme PSČ – doplň mapu (napr. 02354 → Turzovka).");
-        return false;
+        showFieldError(zip, errZip, "PSČ musí mať presne 5 číslic.");
+        ok = false;
+      } else if (!v.city) {
+        showFieldError(zip, errZip, "Neznáme PSČ – doplň mapu (napr. 02354 → Turzovka).");
+        ok = false;
       }
 
-      // email (✅ oprava)
+      // email
       if (!v.email) {
-        setFieldError(email, errEmail, "E-mail je povinný.");
-        return false;
-      }
-      // HTML5 check + regex
-      if (!email.checkValidity() || !emailPattern.test(v.email)) {
-        setFieldError(email, errEmail, "E-mail nemá správny formát (napr. hero@kingdom.sk).");
-        return false;
+        showFieldError(email, errEmail, "E-mail je povinný.");
+        ok = false;
+      } else if (!emailPattern.test(v.email) || (email && typeof email.checkValidity === "function" && !email.checkValidity())) {
+        showFieldError(email, errEmail, "E-mail nemá správny formát (napr. hero@kingdom.sk).");
+        ok = false;
       }
 
       // phone
       if (!v.phone) {
-        setFieldError(phone, errPhone, "Telefón je povinný.");
-        return false;
-      }
-      if (!phonePattern.test(v.phone)) {
-        setFieldError(phone, errPhone, "Telefón musí byť +<kód><číslo> (8–15 číslic).");
-        return false;
+        showFieldError(phone, errPhone, "Telefón je povinný.");
+        ok = false;
+      } else if (!phonePattern.test(v.phone)) {
+        showFieldError(phone, errPhone, "Telefón musí byť +<kód><číslo> (8–15 číslic).");
+        ok = false;
       }
 
-      return true;
+      if (!ok) showError("Formulár nie je možné uložiť – oprav zvýraznené polia.");
+      return ok;
     }
 
-    // live clear on typing for required fields (aby bolo “user-friendly”)
+    // live clear on typing (optional but nice; doesn't break tests)
     [
       [fullName, errFullName],
+      [company, errCompany],
       [age, errAge],
       [food, errFood],
       [kingdom, errKingdom],
+      [zip, errZip],
       [email, errEmail],
       [phone, errPhone],
     ].forEach(([el, errEl]) => {
+      if (!el) return;
       el.addEventListener("input", () => clearFieldError(el, errEl));
       el.addEventListener("change", () => clearFieldError(el, errEl));
     });
 
-    // ---------- save cards ----------
+    // ---------- Saved cards ----------
     function renderSavedItem(v) {
       const wrapper = document.createElement("div");
       wrapper.className = "saved-item";
@@ -621,8 +632,8 @@ document.addEventListener("DOMContentLoaded", () => {
       title.textContent = v.fullName;
 
       const del = document.createElement("button");
-      del.className = "btn-delete";
       del.type = "button";
+      del.className = "btn-delete";
       del.textContent = "Vymazať";
       del.setAttribute("data-testid", "btn-delete-card");
       del.addEventListener("click", () => wrapper.remove());
@@ -649,40 +660,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function resetForm() {
-      fullName.value = "";
-      company.value = "";
-      age.value = "";
-      food.value = "";
-      kingdom.value = "";
-      zip.value = "";
-      email.value = "";
-      phone.value = "";
+      if (fullName) fullName.value = "";
+      if (company) company.value = "";
+      if (age) age.value = "";
+      if (food) food.value = "";
+      if (kingdom) kingdom.value = "";
+      if (zip) zip.value = "";
+      if (email) email.value = "";
+      if (phone) phone.value = "";
 
       cauldron.clear();
       refreshDnDCount();
       renderCauldron();
 
       updateZipCity();
-      clearError();
       clearAllFieldErrors();
+      clearError();
 
-      // vráť aj selected state z poličky
-      dndSource.querySelectorAll(".dnd-item.is-selected").forEach((n) => n.classList.remove("is-selected"));
+      dndSource?.querySelectorAll(".dnd-item.is-selected").forEach((n) => n.classList.remove("is-selected"));
     }
 
-    btnReset.addEventListener("click", resetForm);
+    btnSave.addEventListener("click", (e) => {
+      e.preventDefault?.();
 
-    btnSave.addEventListener("click", () => {
-      clearError();
       const v = getValues();
-
       const ok = validateAndMark(v);
-      if (!ok) {
-        showError("Formulár nie je možné uložiť – oprav zvýraznené polia.");
-        return;
-      }
+      if (!ok) return;
 
       savedList.prepend(renderSavedItem(v));
+      // ❗️NE-RESETUJEME po uložení (test Age boundaries predpokladá, že polia ostanú vyplnené)
+    });
+
+    btnReset.addEventListener("click", (e) => {
+      e.preventDefault?.();
       resetForm();
     });
 

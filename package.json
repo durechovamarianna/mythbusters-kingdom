@@ -6,12 +6,12 @@
   "type": "commonjs",
   "scripts": {
     "test": "playwright test",
-    "test:smoke": "playwright test tests/smoke",
-    "test:regression": "playwright test tests/regression",
-    "test:e2e": "playwright test tests/e2e",
+    "test:smoke": "playwright test --project=smoke",
+    "test:regression": "playwright test --project=regression",
+    "test:e2e": "playwright test --project=e2e",
     "test:ui": "playwright test --ui",
     "test:report": "playwright show-report",
-    "test:smoke:headed": "playwright test tests/smoke --headed",
+    "test:smoke:headed": "playwright test --project=smoke --headed",
     "test:debug": "playwright test --debug",
     "test:prod": "cross-env PW_BASE_URL=https://durechovamarianna.github.io/mythbusters-kingdom/ playwright test"
   },

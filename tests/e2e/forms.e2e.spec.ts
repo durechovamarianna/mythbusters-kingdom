@@ -17,8 +17,6 @@ async function gotoForms(page: Page) {
 }
 
 async function fillValidForm(page: Page) {
-  // SK: Použijeme hodnoty, ktoré prejdú validáciami.
-  // EN: Use values that pass validations.
   await tid(page, "input-fullname").fill("Janko Hraško");
   await tid(page, "input-company").fill("Zlatý Grif s.r.o.");
   await tid(page, "input-age").fill("36");
@@ -76,8 +74,7 @@ test.describe("E2E – Forms", () => {
       await expect(card).toContainText("janko.hrasko@kingdom.sk");
       await expect(card).toContainText("+421907098708");
 
-      // SK: prísady uložené (kľúče)
-      // EN: ingredients keys are stored
+      // ingredients keys
       await expect(card).toContainText("unicorn-hair");
       await expect(card).toContainText("dragon-scale");
       await expect(card).toContainText("moon-dust");
@@ -95,8 +92,6 @@ test.describe("E2E – Forms", () => {
 
     await tid(page, "btn-reset").click();
 
-    // SK: Po resete sa všetko vyčistí.
-    // EN: After reset, everything should be cleared.
     await expect(tid(page, "input-fullname")).toHaveValue("");
     await expect(tid(page, "input-age")).toHaveValue("");
     await expect(tid(page, "select-kingdom")).toHaveValue("");

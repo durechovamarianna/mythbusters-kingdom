@@ -155,6 +155,9 @@
     .btn-delete { background: rgba(231,76,60,0.15); color: #c0392b; }
     .kv { display: grid; grid-template-columns: 220px 1fr; gap: 8px; font-size: 14px; }
     .kv div:nth-child(odd) { font-weight: 800; opacity: 0.9; }
+
+    /* optional nav state */
+    a.is-active { font-weight: 900; text-decoration: underline; }
   </style>
 </head>
 
@@ -165,8 +168,14 @@
       <p class="hint">
         Stránka na testovanie: dropdown, drag & drop, validácie, povinné/nepovinné polia, placeholdery, PSČ → mesto.
       </p>
+
       <p class="hint">
-        Navigácia: <a href="index.html">Domov</a> • <a href="library.html">Knižnica</a> • <a href="dragon.html">Draci</a> • <a href="story.html">Príbeh</a>
+        Navigácia:
+        <a data-testid="nav-home" href="index.html">Domov</a> •
+        <a data-testid="nav-library" href="library.html">Knižnica</a> •
+        <a data-testid="nav-dragon" href="dragon.html">Draci</a> •
+        <a data-testid="nav-story" href="story.html">Príbeh</a> •
+        <a data-testid="nav-forms" href="forms.html">Formuláre</a>
       </p>
     </div>
 
@@ -232,7 +241,7 @@
         <div class="row">
           <label for="phone">Telefón (medzinárodný) <span class="req">*</span></label>
           <input id="phone" data-testid="input-phone" type="tel" placeholder="+421901123456" />
-          <div class="hint">Formát: +<kód krajiny><číslo>, napr. +421...</div>
+          <div class="hint">Formát: +&lt;kód krajiny&gt;&lt;číslo&gt;, napr. +421...</div>
           <div class="field-error" data-testid="err-phone"></div>
         </div>
 
