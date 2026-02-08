@@ -1,0 +1,51 @@
+name: Playwright Scheduled
+
+on:
+  schedule:
+    # 17:00 CET (zima) = 16:00 UTC
+    - cron: "0 16 * * *"
+    # 00:00 CET (zima) = 23:00 UTC
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: playwright-scheduled
+  cancel-in-progress: true
+
+jobs:
+  scheduled:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      # 17:00 run -> regression
+      - name: Run Regression at 17:00
+        if: github.event_name == 'schedule' && github.event.schedule == '0 16 * * *'
+        run: npx playwright test --project=regression
+
+      # 00:00 run -> full suite
+      - name: Run Full suite at midnight
+        if: github.event_name == 'schedule' && github.event.schedule == '0 23 * * *'
+        run: npx playwright test
+
+      # Manual run -> full
+      - name: Run Full suite (manual)
+        if: github.event_name == 'workflow_dispatch'
+        run: npx playwright test
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report

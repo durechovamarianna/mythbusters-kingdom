@@ -1,9 +1,6 @@
 name: Playwright Tests
 
 on:
-  schedule:
-    - cron: "0 16 * * *"
-    - cron: "30 23 * * *"
   workflow_dispatch:
 
 concurrency:
