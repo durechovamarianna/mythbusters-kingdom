@@ -1,14 +1,14 @@
-name: Playwright Tests
+name: Playwright Regression (manual)
 
 on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: regression-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
+  regression:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,18 +19,18 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run tests
-        run: npx playwright test
+      - name: Run regression project
+        run: npx playwright test --project=regression
 
-      - name: Upload HTML report
+      - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-regression
           path: playwright-report

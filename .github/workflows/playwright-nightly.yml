@@ -1,0 +1,45 @@
+name: Playwright Nightly (17:00 + 00:00)
+
+on:
+  schedule:
+    # 17:00 local time (Slovakia) — handle winter/summer:
+    - cron: "0 16 * * *"  # 17:00 CET (winter)
+    - cron: "0 15 * * *"  # 17:00 CEST (summer)
+
+    # 00:00 local time (Slovakia) — handle winter/summer:
+    - cron: "0 23 * * *"  # 00:00 CET (winter)
+    - cron: "0 22 * * *"  # 00:00 CEST (summer)
+
+  workflow_dispatch:
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run full test suite (all projects)
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-nightly
+          path: playwright-report
