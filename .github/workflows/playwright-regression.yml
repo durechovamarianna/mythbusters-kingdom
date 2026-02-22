@@ -1,15 +1,29 @@
-name: Playwright Regression (manual)
+name: Playwright Nightly (17:00 + 00:00)
 
 on:
+  schedule:
+    # 17:00 local time (Slovakia) — winter/summer
+    - cron: "0 16 * * *"  # 17:00 CET (winter)
+    - cron: "0 15 * * *"  # 17:00 CEST (summer)
+
+    # 00:00 local time (Slovakia) — winter/summer
+    - cron: "0 23 * * *"  # 00:00 CET (winter)
+    - cron: "0 22 * * *"  # 00:00 CEST (summer)
+
   workflow_dispatch:
 
 concurrency:
-  group: regression-${{ github.ref }}
+  group: nightly-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  regression:
+  nightly:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,6 +32,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -25,12 +40,15 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run regression project
-        run: npx playwright test --project=regression
+      - name: Run full test suite (all projects) on GitHub Pages stage
+        env:
+          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom
+        run: npx playwright test
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-regression
+          name: playwright-report-nightly
           path: playwright-report
+          retention-days: 14

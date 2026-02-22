@@ -1,16 +1,23 @@
-name: Playwright Smoke
+name: Playwright Nightly (17:00 + 00:00)
 
 on:
-  push:
-    branches: [ main ]
+  schedule:
+    # 17:00 local time (Slovakia) — handle winter/summer:
+    - cron: "0 16 * * *"  # 17:00 CET (winter)
+    - cron: "0 15 * * *"  # 17:00 CEST (summer)
+
+    # 00:00 local time (Slovakia) — handle winter/summer:
+    - cron: "0 23 * * *"  # 00:00 CET (winter)
+    - cron: "0 22 * * *"  # 00:00 CEST (summer)
+
   workflow_dispatch:
 
 concurrency:
-  group: smoke-${{ github.ref }}
+  group: nightly-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  smoke:
+  nightly:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,12 +34,12 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run SMOKE tests
-        run: npx playwright test --project=smoke
+      - name: Run full test suite (all projects)
+        run: npx playwright test
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-smoke
+          name: playwright-report-nightly
           path: playwright-report
