@@ -43,7 +43,7 @@ test.describe("REGRESSION – Library rules", () => {
     // SK: Otvoríme stránku vždy nanovo – testy sú izolované a nezávislé.
     // EN: Always open a fresh page state – tests stay isolated and independent.
     await page.goto("library.html");
-    await expect(page).toHaveURL(/libraries\.html$/);  //TU JE DEMONŠTRATÍVNA CHYBA /library\.html$/
+    await expect(page).toHaveURL(/library\.html$/);  
 
     // SK: Stabilný “anchor” = potvrdenie, že sme na správnej stránke.
     // EN: Stable page anchor = confirmation we are on the correct page.
@@ -226,4 +226,13 @@ test.describe("REGRESSION – Library rules", () => {
       await expect(results.first()).toBeVisible();
     }
   });
+
+  test("DEMO: Intentional failure (runs only when DEMO_FAIL=1)", async ({ page }) => {
+
+   // SK: Úmyselne spraviť chybný assert (pre ukážku reportu).
+  // EN: Intentionally assert something wrong (to generate a failure report).
+  await page.goto("library.html");
+  await expect(page).toHaveTitle(/THIS TITLE SHOULD NEVER MATCH/i);
+});
+
 });
