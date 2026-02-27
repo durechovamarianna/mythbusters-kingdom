@@ -35,7 +35,7 @@ jobs:
 
       - name: Run SMOKE tests (GitHub Pages stage)
         env:
-          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom
+          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom/
         run: npx playwright test --project=smoke
 
       - name: Upload Playwright report

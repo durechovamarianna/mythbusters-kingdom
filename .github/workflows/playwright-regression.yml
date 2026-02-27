@@ -33,7 +33,7 @@ jobs:
 
       - name: Run regression project on GitHub Pages stage
         env:
-          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom
+          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom/
         run: npx playwright test --project=regression
 
       - name: Upload Playwright report
