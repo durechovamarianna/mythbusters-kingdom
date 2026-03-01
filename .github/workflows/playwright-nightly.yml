@@ -2,19 +2,14 @@ name: Playwright Nightly (17:00 + 00:00)
 
 on:
   schedule:
-    # 17:00 local time (Slovakia) — winter/summer
-    - cron: "0 16 * * *"  # 17:00 CET (winter)
-    - cron: "0 15 * * *"  # 17:00 CEST (summer)
-
-    # 00:00 local time (Slovakia) — winter/summer
-    - cron: "0 23 * * *"  # 00:00 CET (winter)
-    - cron: "0 22 * * *"  # 00:00 CEST (summer)
-
+    # GitHub schedule is ALWAYS UTC
+    - cron: "0 16 * * *"  # 17:00 CET (winter) / 18:00 CEST (summer)
+    - cron: "0 23 * * *"  # 00:00 CET (winter) / 01:00 CEST (summer)
   workflow_dispatch:
 
 concurrency:
-  group: nightly-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false   # ✅ dôležité: nenechať rušiť runy
 
 permissions:
   contents: read
@@ -42,7 +37,7 @@ jobs:
 
       - name: Run full test suite (all projects) on GitHub Pages stage
         env:
-          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom/
+          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom
         run: npx playwright test
 
       - name: Upload Playwright report
