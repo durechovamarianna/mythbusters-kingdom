@@ -37,7 +37,7 @@ jobs:
 
       - name: Run full test suite (all projects) on GitHub Pages stage
         env:
-          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom
+          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom/
         run: npx playwright test
 
       - name: Upload Playwright report
