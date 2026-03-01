@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false   # ✅ dôležité: nenechať rušiť runy
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: false   # keep both runs, do not cancel
 
 permissions:
   contents: read
@@ -18,6 +18,10 @@ jobs:
   nightly:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
+    env:
+      # ✅ one place to set stage URL (with trailing slash)
+      PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom/
 
     steps:
       - name: Checkout
@@ -36,14 +40,20 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run full test suite (all projects) on GitHub Pages stage
-        env:
-          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom/
-        run: npx playwright test
+        run: npx playwright test --base-url="${{ env.PW_BASE_URL }}"
 
-      - name: Upload Playwright report
+      - name: Upload Playwright HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-nightly
           path: playwright-report
+          retention-days: 14
+
+      - name: Upload Playwright raw test results (traces/videos/screenshots)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results-nightly
+          path: test-results
           retention-days: 14

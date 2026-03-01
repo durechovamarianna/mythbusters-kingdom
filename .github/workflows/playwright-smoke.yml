@@ -17,6 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    env:
+      PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom/
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,15 +36,21 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run SMOKE tests (GitHub Pages stage)
-        env:
-          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom
-        run: npx playwright test --project=smoke
+      - name: Run SMOKE tests on GitHub Pages stage
+        run: npx playwright test --project=smoke --base-url="${{ env.PW_BASE_URL }}"
 
-      - name: Upload Playwright report
+      - name: Upload Playwright HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-smoke
           path: playwright-report
+          retention-days: 7
+
+      - name: Upload Playwright raw test results (traces/videos/screenshots)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results-smoke
+          path: test-results
           retention-days: 7

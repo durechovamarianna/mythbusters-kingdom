@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
+    env:
+      PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom/
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,15 +34,21 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run regression project on GitHub Pages stage
-        env:
-          PW_BASE_URL: https://durechovamarianna.github.io/mythbusters-kingdom/
-        run: npx playwright test --project=regression
+      - name: Run REGRESSION tests on GitHub Pages stage
+        run: npx playwright test --project=regression --base-url="${{ env.PW_BASE_URL }}"
 
-      - name: Upload Playwright report
+      - name: Upload Playwright HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-regression
           path: playwright-report
+          retention-days: 14
+
+      - name: Upload Playwright raw test results (traces/videos/screenshots)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results-regression
+          path: test-results
           retention-days: 14
